@@ -1,6 +1,6 @@
-# README
+# Arkanoid
 
-Java 11 base application.
+Juego arkanoid para prácticar programación en Java.
 
 ## BASE SETUP
 
