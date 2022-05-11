@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -50,12 +49,16 @@ public class PanelJuego extends JPanel {
         lblCircle.setLocation(300, 512);
         add(lblCircle);
 
+        movimientosPelota = new MovimientosPelota(lblCircle);
+
+        fpsPelota = new Timer(17, movimientosPelota);
+        fpsPelota.start();
         addKeyListener(movimientoPlataforma);
     }
 
     private class MovimientoPlataforma extends KeyAdapter {
         public MovimientoPlataforma(PanelJuego panelJuego) {
-            this.panelJuego = panelJuego;
+
         }
 
         @Override
@@ -76,31 +79,104 @@ public class PanelJuego extends JPanel {
                 lblPlataforma.setLocation(nuevoPunto);
             }
 
-            if (lblPelotas.isEmpty()) {
-                if (e.getKeyCode() == KeyEvent.VK_UP) {
-                    lblPelotas.add(lblCircle);
-                    //movimientosPelota = new MovimientosPelota(panelJuego);
-                    fpsPelota = new Timer(17, movimientosPelota);
-                    fpsPelota.start();
-                }
-            }
         }
-
-        PanelJuego panelJuego;
     }
 
-    // Clase encargada de actulizar las fisicas
-    // TODO Optimizar codigo y hacerlo más claro.aa
-    // TODO Forma de hacerlo podria ser pedir el parametro de la pelota y tener varios timer para cada pelota y asi poder eliminarlos sin tener problemas y cada clase tendria sus parametros separados y la carga seria mucho mas rapida.
+    // Clase encargada de actulizar las fisicas.
     private class MovimientosPelota implements ActionListener {
+        public MovimientosPelota(JLabel pelota) {
+            this.pelota = pelota;
+            velocidad = 4;
+            posicionX = pelota.getLocation().x;
+            posicionY = pelota.getLocation().y;
+            direccionX = false;
+            direccionY = false;
+        }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            // TODO Auto-generated method stub
-            
+            for (int i = 0; i < lblBricks.length; i++) {
+                if (lblBricks[i].isVisible()) {
+                    if (lblBricks[i].getBounds().intersects(pelota.getBounds())) {
+                        lblBricks[i].setVisible(false);
+
+                        direccionX = ladoGolpeHorizontal(lblBricks[i]);
+                        direccionY = ladoGolpeVertical(lblBricks[i]);
+                    }
+                }
+            }
+
+            if (pelota.getLocation().x <= 0) {
+                direccionX = true;
+            }
+
+            if (pelota.getLocation().x >= 580) {
+                direccionX = false;
+            }
+
+            if (pelota.getLocation().y <= 0) {
+                direccionY = true;
+            }
+
+            if (pelota.getLocation().y >= 580) {
+                direccionY = false;
+            }
+
+            if (direccionX) {
+                posicionX += velocidad;
+            } else {
+                posicionX -= velocidad;
+            }
+
+            if (direccionY) {
+                posicionY += velocidad;
+            } else {
+                posicionY -= velocidad;
+            }
+
+            pelota.setLocation(posicionX, posicionY);
         }
         
+        private boolean ladoGolpeHorizontal(JLabel brick) {
+            int derecha = brick.getBounds().width + brick.getLocation().x;
+            int izquierda = brick.getLocation().x;
+            int medio = brick.getBounds().width / 2 + brick.getLocation().x;
+            boolean cambioDireccion = direccionX;
+            if (pelota.getLocation().x <= derecha && pelota.getLocation().x >= medio) {
+                cambioDireccion = true;
+            }
+
+            if (pelota.getLocation().x >= izquierda && pelota.getLocation().x <= medio) {
+                cambioDireccion = false;
+            }
+
+            return cambioDireccion;
+        }
+
+        private boolean ladoGolpeVertical(JLabel brick) {
+            int abajo = brick.getBounds().height + brick.getLocation().y;
+            int arriba = brick.getLocation().y;
+            int medio = brick.getBounds().height / 2 + brick.getLocation().y;
+            boolean cambioDireccion = direccionX;
+            if (pelota.getLocation().x <= abajo && pelota.getLocation().x >= medio) {
+                cambioDireccion = true;
+            }
+
+            if (pelota.getLocation().x >= arriba && pelota.getLocation().x <= medio) {
+                cambioDireccion = false;
+            }
+
+            return cambioDireccion;
+        }
+
+        int velocidad;
+        int posicionX;
+        int posicionY;
+        boolean direccionX;
+        boolean direccionY;
+        JLabel pelota;
     }
+
 
     String[] pathImg = { "\\img\\Brick1.png" };
     JLabel[] lblBricks;
@@ -109,9 +185,6 @@ public class PanelJuego extends JPanel {
     Timer fpsPelota;
     Timer fpsMejoras;
     VentanaPrincipal ventanaPrincipal;
-    ArrayList<Integer> posicionesMejorasEliminadas = new ArrayList<>();
     MovimientosPelota movimientosPelota;
-    ArrayList<JLabel> lblPelotas = new ArrayList<>();
-    ArrayList<Mejora> mejoras = new ArrayList<>();
     MovimientoPlataforma movimientoPlataforma = new MovimientoPlataforma(this);
 }
