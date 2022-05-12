@@ -1,11 +1,11 @@
 package manuel_marin;
 
-import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -23,27 +23,28 @@ public class PanelJuego extends JPanel {
 
     private void iniciarComponentes() {
         int x = 0, y = 0;
-        bricks = new JLabel[42];
+        bricks = CargaDeNiveles.getNivel(new File("src\\main\\java\\manuel_marin\\niveles\\nivel1.txt"));
         hitBoxBricksEsquinas = new JLabel[bricks.length][4];
         hitBoxBricksLaterales = new JLabel[bricks.length][4];
 
         for (int i = 0; i < bricks.length; i++) {
-            JLabel lbl = new JLabel(new ImageIcon(PanelJuego.class.getResource(pathImg[0])));
-            lbl.setSize(lbl.getPreferredSize());
-            lbl.setLocation(x, y);
-            lbl.addKeyListener(movimientoPlataforma);
-            hitBoxBricksEsquinas[i] = posicionHitBoxEsquinas(lbl);
-            hitBoxBricksLaterales[i] = posicionHitBoxLaterales(lbl, hitBoxBricksEsquinas[i]);
-            // lbl.setVisible(false);
-            add(lbl);
-            bricks[i] = lbl;
+            if (bricks[i] != null) {
+                bricks[i].setSize(bricks[i].getPreferredSize());
+                bricks[i].setLocation(x, y);
+                bricks[i].addKeyListener(movimientoPlataforma);
+                hitBoxBricksEsquinas[i] = getPosicionesHitBoxEsquinas(bricks[i]);
+                hitBoxBricksLaterales[i] = getPosicionesHitBoxLaterales(bricks[i], hitBoxBricksEsquinas[i]);
+                // lbl.setVisible(false);
+                add(bricks[i]);
+                bricks[i] = bricks[i];
 
-            for (int j = 0; j < hitBoxBricksEsquinas[i].length; j++) {
-                add(hitBoxBricksEsquinas[i][j]);
-            }
+                for (int j = 0; j < hitBoxBricksEsquinas[i].length; j++) {
+                    add(hitBoxBricksEsquinas[i][j]);
+                }
 
-            for (int j = 0; j < hitBoxBricksLaterales[i].length; j++) {
-                add(hitBoxBricksLaterales[i][j]);
+                for (int j = 0; j < hitBoxBricksLaterales[i].length; j++) {
+                    add(hitBoxBricksLaterales[i][j]);
+                }
             }
 
             if ((i + 1) % 7 == 0) {
@@ -60,9 +61,16 @@ public class PanelJuego extends JPanel {
         plataforma.addKeyListener(movimientoPlataforma);
         add(plataforma);
 
-        hitBoxPlataforma = posicionHitBoxEsquinas(plataforma);
-        for (int i = 0; i < hitBoxPlataforma.length; i++) {
-            add(hitBoxPlataforma[i]);
+        hitBoxPlataformaEsquinas = getPosicionesHitBoxEsquinas(plataforma);
+
+        for (int i = 0; i < hitBoxPlataformaEsquinas.length; i++) {
+            add(hitBoxPlataformaEsquinas[i]);
+        }
+
+        hitBoxPlataformaLateral = getPosicionesHitBoxLaterales(plataforma, hitBoxPlataformaEsquinas);
+
+        for (int i = 0; i < hitBoxPlataformaLateral.length; i++) {
+            add(hitBoxPlataformaLateral[i]);
         }
 
         pelota = new JLabel(new ImageIcon(PanelJuego.class.getResource("\\img\\Pelota.png")));
@@ -70,42 +78,40 @@ public class PanelJuego extends JPanel {
         pelota.setLocation(300, 412);
         add(pelota);
 
-        movimientosPelota = new MovimientosPelota(pelota);
+        movimientosPelota = new MovimientosPelota();
 
         fpsPelota = new Timer(17, movimientosPelota);
         addKeyListener(movimientoPlataforma);
     }
 
-    private JLabel[] posicionHitBoxEsquinas(JLabel brick) {
+    private JLabel[] getPosicionesHitBoxEsquinas(JLabel brick) {
         JLabel[] hitboxs = new JLabel[4];
         Point[] posicionesHitBoxs = new Point[4];
 
         posicionesHitBoxs[0] = new Point(brick.getLocation());
 
         posicionesHitBoxs[1] = new Point(
-                brick.getLocation().x + brick.getBounds().width - (brick.getBounds().width / 10),
+                brick.getLocation().x + brick.getBounds().width - (brick.getBounds().width / 20),
                 brick.getLocation().y);
 
         posicionesHitBoxs[2] = new Point(brick.getLocation().x,
-                brick.getLocation().y + brick.getBounds().height - (brick.getBounds().height / 4));
+                brick.getLocation().y + brick.getBounds().height - (brick.getBounds().height / 6));
 
         posicionesHitBoxs[3] = new Point(
-                brick.getLocation().x + brick.getBounds().width - (brick.getBounds().width / 10),
-                brick.getLocation().y + brick.getBounds().height - (brick.getBounds().height / 4));
+                brick.getLocation().x + brick.getBounds().width - (brick.getBounds().width / 20),
+                brick.getLocation().y + brick.getBounds().height - (brick.getBounds().height / 6));
 
         for (int i = 0; i < hitboxs.length; i++) {
             JLabel hitbox = new JLabel();
-            hitbox.setSize(10, 8);
+            hitbox.setSize(5, 5);
             hitbox.setLocation(posicionesHitBoxs[i]);
-            hitbox.setOpaque(true);
-            hitbox.setBackground(Color.green);
             hitboxs[i] = hitbox;
         }
 
         return hitboxs;
     }
 
-    private JLabel[] posicionHitBoxLaterales(JLabel brick, JLabel[] hitBoxEsquinas) {
+    private JLabel[] getPosicionesHitBoxLaterales(JLabel brick, JLabel[] hitBoxEsquinas) {
         JLabel[] hitboxs = new JLabel[4];
         Point[] posicionesLateralesHitBoxs = new Point[4];
 
@@ -128,13 +134,11 @@ public class PanelJuego extends JPanel {
         for (int i = 0; i < hitboxs.length; i++) {
             JLabel hitboxLateral = new JLabel();
             if (i == 0 || i == 3) {
-                hitboxLateral.setSize(80, 8);
+                hitboxLateral.setSize(90, 5);
             } else {
-                hitboxLateral.setSize(10, 16);
+                hitboxLateral.setSize(5, 12);
             }
             hitboxLateral.setLocation(posicionesLateralesHitBoxs[i]);
-            hitboxLateral.setOpaque(true);
-            hitboxLateral.setBackground(Color.red);
             hitboxs[i] = hitboxLateral;
         }
 
@@ -151,9 +155,11 @@ public class PanelJuego extends JPanel {
                 if (plataforma.getLocation().x >= 0) {
                     nuevoPunto.x -= 15;
 
-                    for (int i = 0; i < hitBoxPlataforma.length; i++) {
-                        hitBoxPlataforma[i].setLocation(hitBoxPlataforma[i].getLocation().x - 15,
-                                hitBoxPlataforma[i].getLocation().y);
+                    for (int i = 0; i < hitBoxPlataformaEsquinas.length; i++) {
+                        hitBoxPlataformaEsquinas[i].setLocation(hitBoxPlataformaEsquinas[i].getLocation().x - 15,
+                                hitBoxPlataformaEsquinas[i].getLocation().y);
+                        hitBoxPlataformaLateral[i].setLocation(hitBoxPlataformaLateral[i].getLocation().x - 15,
+                                hitBoxPlataformaLateral[i].getLocation().y);
                     }
                 }
                 plataforma.setLocation(nuevoPunto);
@@ -164,9 +170,11 @@ public class PanelJuego extends JPanel {
                 if (plataforma.getLocation().x <= 600) {
                     nuevoPunto.x += 15;
 
-                    for (int i = 0; i < hitBoxPlataforma.length; i++) {
-                        hitBoxPlataforma[i].setLocation(hitBoxPlataforma[i].getLocation().x + 15,
-                                hitBoxPlataforma[i].getLocation().y);
+                    for (int i = 0; i < hitBoxPlataformaEsquinas.length; i++) {
+                        hitBoxPlataformaEsquinas[i].setLocation(hitBoxPlataformaEsquinas[i].getLocation().x + 15,
+                                hitBoxPlataformaEsquinas[i].getLocation().y);
+                        hitBoxPlataformaLateral[i].setLocation(hitBoxPlataformaLateral[i].getLocation().x + 15,
+                                hitBoxPlataformaLateral[i].getLocation().y);
                     }
                 }
                 plataforma.setLocation(nuevoPunto);
@@ -182,103 +190,117 @@ public class PanelJuego extends JPanel {
 
     // Clase encargada de actulizar las fisicas.
     private class MovimientosPelota implements ActionListener {
-        public MovimientosPelota(JLabel pelota) {
-            this.pelota = pelota;
+        public MovimientosPelota() {
             velocidad = 4;
             posicionX = pelota.getLocation().x;
             posicionY = pelota.getLocation().y;
             direccionX = false;
-            direccionY = false;
+            direccionY = true;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
             for (int i = 0; i < bricks.length; i++) {
-                if (bricks[i].isVisible()) {
-                    if (bricks[i].getBounds().intersects(pelota.getBounds())) {
-                        for (int j = 0; j < hitBoxBricksEsquinas[i].length; j++) {
-                            if (hitBoxBricksEsquinas[i][j].isVisible()) {
-                                if (hitBoxBricksEsquinas[i][j].getBounds().intersects(pelota.getBounds())) {
-                                    if (j == 0) {
-                                        if (direccionX) {
-                                            direccionX = false;
-                                        }
-
-                                        if (direccionY) {
-                                            direccionY = false;
-                                        }
-                                    }
-
-                                    if (j == 1) {
-                                        if (!direccionX) {
-                                            direccionX = true;
-                                        }
-
-                                        if (direccionY) {
-                                            direccionY = false;
-                                        }
-                                    }
-
-                                    if (j == 2) {
-                                        if (direccionX) {
-                                            direccionX = false;
-                                        }
-
-                                        if (!direccionY) {
-                                            direccionY = true;
-                                        }
-                                    }
-
-                                    if (j == 3) {
-                                        if (!direccionX) {
-                                            direccionX = true;
-                                        }
-
-                                        if (!direccionY) {
-                                            direccionY = true;
-                                        }
-                                    }
-
-                                    velocidad = 6;
-                                } else {
-                                    if (hitBoxBricksLaterales[i][j].isVisible()) {
-                                        if (hitBoxBricksLaterales[i][j].getBounds().intersects(pelota.getBounds())) {
-                                            if (j == 0) {
-                                                direccionY = false;
-                                            }
-
-                                            if (j == 1) {
+                if (bricks[i] != null) {
+                    if (bricks[i].isVisible()) {
+                        if (bricks[i].getBounds().intersects(pelota.getBounds())) {
+                            for (int j = 0; j < hitBoxBricksEsquinas[i].length; j++) {
+                                if (hitBoxBricksEsquinas[i][j].isVisible()) {
+                                    if (hitBoxBricksEsquinas[i][j].getBounds().intersects(pelota.getBounds())) {
+                                        if (j == 0) {
+                                            if (direccionX) {
                                                 direccionX = false;
                                             }
 
-                                            if (j == 2) {
+                                            if (direccionY) {
+                                                direccionY = false;
+                                            }
+                                        }
+
+                                        if (j == 1) {
+                                            if (!direccionX) {
                                                 direccionX = true;
                                             }
 
-                                            if (j == 3) {
-                                                direccionY = true;
+                                            if (direccionY) {
+                                                direccionY = false;
+                                            }
+                                        }
+
+                                        if (j == 2) {
+                                            if (direccionX) {
+                                                direccionX = false;
                                             }
 
-                                            velocidad = 4;
+                                            if (!direccionY) {
+                                                direccionY = true;
+                                            }
                                         }
+
+                                        if (j == 3) {
+                                            if (!direccionX) {
+                                                direccionX = true;
+                                            }
+
+                                            if (!direccionY) {
+                                                direccionY = true;
+                                            }
+                                        }
+
+                                        velocidad = 6;
+                                        if (bricks[i].getIcon().toString().contains("Brick1")) {
+                                            for (int k = 0; k < hitBoxBricksEsquinas[i].length; k++) {
+                                                hitBoxBricksEsquinas[i][k].setVisible(false);
+                                                hitBoxBricksLaterales[i][k].setVisible(false);
+                                            }
+                                        }
+                                    } else {
+                                        if (hitBoxBricksLaterales[i][j].isVisible()) {
+                                            if (hitBoxBricksLaterales[i][j].getBounds()
+                                                    .intersects(pelota.getBounds())) {
+                                                if (j == 0) {
+                                                    direccionY = false;
+                                                }
+
+                                                if (j == 1) {
+                                                    direccionX = false;
+                                                }
+
+                                                if (j == 2) {
+                                                    direccionX = true;
+                                                }
+
+                                                if (j == 3) {
+                                                    direccionY = true;
+                                                }
+
+                                                velocidad = 4;
+                                                if (bricks[i].getIcon().toString().contains("Brick1")) {
+                                                    for (int k = 0; k < hitBoxBricksEsquinas[i].length; k++) {
+                                                        hitBoxBricksEsquinas[i][k].setVisible(false);
+                                                        hitBoxBricksLaterales[i][k].setVisible(false);
+                                                    }
+                                                }
+                                            }
+                                        }
+
                                     }
                                 }
-
-                                hitBoxBricksLaterales[i][j].setVisible(false);
-                                hitBoxBricksEsquinas[i][j].setVisible(false);
                             }
+                            if (durezaLadrillo(bricks[i])) {
+                                bricks[i].setVisible(false);
+                            }
+                            ventanaPrincipal.panelPuntuacion.puntuacion += 100;
+                            ventanaPrincipal.panelPuntuacion.updateLabels();
                         }
 
-                        bricks[i].setVisible(false);
-                        ventanaPrincipal.panelPuntuacion.puntuacion += 100;
-                        ventanaPrincipal.panelPuntuacion.updateLabels();
                     }
                 }
             }
 
             if (plataforma.getBounds().intersects(pelota.getBounds())) {
-                for (int j = 0; j < hitBoxPlataforma.length; j++) {
-                    if (hitBoxPlataforma[j].getBounds().intersects(pelota.getBounds())) {
+                for (int j = 0; j < 2; j++) {
+                    if (hitBoxPlataformaEsquinas[j].getBounds().intersects(pelota.getBounds())) {
                         if (j == 0) {
                             if (direccionX) {
                                 direccionX = false;
@@ -295,10 +317,12 @@ public class PanelJuego extends JPanel {
 
                             velocidad = 6;
                         }
+                    } else {
+                        if (hitBoxPlataformaLateral[0].getBounds().intersects(pelota.getBounds())) {
+                            direccionY = false;
+                        }
                     }
                 }
-
-                direccionY = false;
 
             }
 
@@ -314,7 +338,7 @@ public class PanelJuego extends JPanel {
                 direccionY = true;
             }
 
-            if (pelota.getLocation().y >= 480) {
+            if (pelota.getLocation().y >= 440) {
                 ventanaPrincipal.panelPuntuacion.vidas--;
                 ventanaPrincipal.panelPuntuacion.updateLabels();
 
@@ -322,10 +346,15 @@ public class PanelJuego extends JPanel {
                     pelota.setLocation(300, 412);
                     plataforma.setLocation(250, 430);
 
-                    JLabel[] reinicioHitBox = posicionHitBoxEsquinas(plataforma);
+                    JLabel[] reinicioHitBox = getPosicionesHitBoxEsquinas(plataforma);
 
-                    for (int i = 0; i < hitBoxPlataforma.length; i++) {
-                        hitBoxPlataforma[i].setLocation(reinicioHitBox[i].getLocation());
+                    for (int i = 0; i < hitBoxPlataformaEsquinas.length; i++) {
+                        hitBoxPlataformaEsquinas[i].setLocation(reinicioHitBox[i].getLocation());
+                    }
+
+                    reinicioHitBox = getPosicionesHitBoxLaterales(plataforma, hitBoxPlataformaEsquinas);
+                    for (int i = 0; i < hitBoxPlataformaLateral.length; i++) {
+                        hitBoxPlataformaLateral[i].setLocation(reinicioHitBox[i].getLocation());
                     }
 
                     actualizarParametros();
@@ -358,7 +387,16 @@ public class PanelJuego extends JPanel {
             posicionX = pelota.getLocation().x;
             posicionY = pelota.getLocation().y;
             direccionX = false;
-            direccionY = false;
+            direccionY = true;
+        }
+
+        private boolean durezaLadrillo(JLabel brick) {
+            if (brick.getIcon().toString().contains("Brick2.png")) {
+                brick.setIcon(new ImageIcon(PanelJuego.class.getResource("\\img\\Brick1.png")));
+                return false;
+            } else {
+                return true;
+            }
         }
 
         int velocidad;
@@ -366,14 +404,14 @@ public class PanelJuego extends JPanel {
         int posicionY;
         boolean direccionX;
         boolean direccionY;
-        JLabel pelota;
     }
 
     String[] pathImg = { "\\img\\Brick1.png" };
     JLabel[] bricks;
     JLabel[][] hitBoxBricksEsquinas;
     JLabel[][] hitBoxBricksLaterales;
-    JLabel[] hitBoxPlataforma;
+    JLabel[] hitBoxPlataformaEsquinas;
+    JLabel[] hitBoxPlataformaLateral;
     JLabel plataforma;
     JLabel pelota;
     Timer fpsPelota;
