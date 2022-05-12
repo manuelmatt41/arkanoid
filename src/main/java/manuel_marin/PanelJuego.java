@@ -238,6 +238,8 @@ public class PanelJuego extends JPanel {
                                             direccionY = true;
                                         }
                                     }
+
+                                    velocidad = 6;
                                 } else {
                                     if (hitBoxBricksLaterales[i][j].isVisible()) {
                                         if (hitBoxBricksLaterales[i][j].getBounds().intersects(pelota.getBounds())) {
@@ -257,6 +259,7 @@ public class PanelJuego extends JPanel {
                                                 direccionY = true;
                                             }
 
+                                            velocidad = 4;
                                         }
                                     }
                                 }
@@ -280,17 +283,21 @@ public class PanelJuego extends JPanel {
                             if (direccionX) {
                                 direccionX = false;
                             }
+                            direccionY = false;
+
                         }
 
                         if (j == 1) {
                             if (!direccionX) {
                                 direccionX = true;
                             }
+                            direccionY = false;
+
                         }
+                        velocidad = 6;
                     }
                 }
 
-                direccionY = false;
             }
 
             if (pelota.getLocation().x <= 0) {
@@ -309,25 +316,25 @@ public class PanelJuego extends JPanel {
                 ventanaPrincipal.panelPuntuacion.vidas--;
                 ventanaPrincipal.panelPuntuacion.updateLabels();
 
-               if (ventanaPrincipal.panelPuntuacion.vidas > 0) {
-                pelota.setLocation(300, 512);
-                plataforma.setLocation(250, 530);
+                if (ventanaPrincipal.panelPuntuacion.vidas > 0) {
+                    pelota.setLocation(300, 512);
+                    plataforma.setLocation(250, 530);
 
-                JLabel[] reinicioHitBox = posicionHitBoxEsquinas(plataforma);
+                    JLabel[] reinicioHitBox = posicionHitBoxEsquinas(plataforma);
 
-                for (int i = 0; i < hitBoxPlataforma.length; i++) {
-                    hitBoxPlataforma[i].setLocation(reinicioHitBox[i].getLocation());
+                    for (int i = 0; i < hitBoxPlataforma.length; i++) {
+                        hitBoxPlataforma[i].setLocation(reinicioHitBox[i].getLocation());
+                    }
+
+                    actualizarParametros();
+                    fpsPelota.stop();
+                    return;
+                } else {
+                    ventanaPrincipal.dispose();
+                    new VentanaPrincipal();
+                    fpsPelota.stop();
+                    return;
                 }
-
-                actualizarParametros();
-                fpsPelota.stop();
-                return;
-               } else {
-                   ventanaPrincipal.dispose();
-                   new VentanaPrincipal();
-                   fpsPelota.stop();
-                   return;
-               }
             }
 
             if (direccionX) {
