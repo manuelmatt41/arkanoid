@@ -1,5 +1,6 @@
 package manuel_marin;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,16 +13,29 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+/**
+ * Clase donde se muestra el juego.
+ */
 public class PanelJuego extends JPanel {
+    /**
+     * inicializa las propiedades de los parametros.
+     * 
+     * @param ventanaPrincipal El JFrame donde se carga la clase.
+     */
     public PanelJuego(VentanaPrincipal ventanaPrincipal) {
         setLayout(null);
         this.ventanaPrincipal = ventanaPrincipal;
         iniciarComponentes();
 
         setFocusable(true);
+        setBackground(new Color(147, 176, 171));
     }
 
+    /**
+     * Inicio los componentes del panel.
+     */
     private void iniciarComponentes() {
+        // Crea los ladrillos juntos a sus hitboxs
         int x = 0, y = 0;
         bricks = CargaDeNiveles.getNivel(new File("src\\main\\java\\manuel_marin\\niveles\\nivel1.txt"));
         hitBoxBricksEsquinas = new JLabel[bricks.length][4];
@@ -34,7 +48,6 @@ public class PanelJuego extends JPanel {
                 bricks[i].addKeyListener(movimientoPlataforma);
                 hitBoxBricksEsquinas[i] = getPosicionesHitBoxEsquinas(bricks[i]);
                 hitBoxBricksLaterales[i] = getPosicionesHitBoxLaterales(bricks[i], hitBoxBricksEsquinas[i]);
-                // lbl.setVisible(false);
                 add(bricks[i]);
                 bricks[i] = bricks[i];
 
@@ -55,6 +68,7 @@ public class PanelJuego extends JPanel {
             }
         }
 
+        // Crea la plataforma con sus hitboxs
         plataforma = new JLabel(new ImageIcon(PanelJuego.class.getResource("\\img\\Plataforma.png")));
         plataforma.setSize(plataforma.getPreferredSize());
         plataforma.setLocation(250, 430);
@@ -73,17 +87,28 @@ public class PanelJuego extends JPanel {
             add(hitBoxPlataformaLateral[i]);
         }
 
+        // Crea la pelota
         pelota = new JLabel(new ImageIcon(PanelJuego.class.getResource("\\img\\Pelota.png")));
         pelota.setSize(20, 20);
         pelota.setLocation(300, 412);
         add(pelota);
 
+        // Crea un timer que se encarga de los movimientos
         movimientosPelota = new MovimientosPelota();
 
         fpsPelota = new Timer(17, movimientosPelota);
         addKeyListener(movimientoPlataforma);
     }
 
+    /**
+     * Crea y devuelve un array de JLabel que representan las hitbox de las esquinas
+     * de los ladrillos. De manera que 0.Arriba izquierda, 1.Arriba derecha, 2.Abajo
+     * izquierda y 3.Abajo derecha.
+     * 
+     * @param brick JLabel que representa el brick para calcular las posiciones
+     *              correspondientes para las hitbox de las esquinas.
+     * @return Devuelve un array de JLabel.
+     */
     private JLabel[] getPosicionesHitBoxEsquinas(JLabel brick) {
         JLabel[] hitboxs = new JLabel[4];
         Point[] posicionesHitBoxs = new Point[4];
@@ -111,6 +136,18 @@ public class PanelJuego extends JPanel {
         return hitboxs;
     }
 
+    /**
+     * Crea y devuelve un array de JLabel que representan las hitbox de laterales
+     * de los ladrillos respectos a las posiciones de las hitbox de las esquinas. De
+     * manera que 0.Arriba, 1.Izquierda, 2.Derecha y 3.Abajo.
+     * 
+     * @param brick          JLabel que representa el brick para calcular las
+     *                       posiciones
+     *                       correspondientes para las hitbox de las esquinas.
+     * @param hitBoxEsquinas Array de hitbox de esquinas para calcular las
+     *                       posiciones respecto a las esquinas
+     * @return Devuelve un array de JLabel.
+     */
     private JLabel[] getPosicionesHitBoxLaterales(JLabel brick, JLabel[] hitBoxEsquinas) {
         JLabel[] hitboxs = new JLabel[4];
         Point[] posicionesLateralesHitBoxs = new Point[4];
@@ -145,8 +182,16 @@ public class PanelJuego extends JPanel {
         return hitboxs;
     }
 
-    // Clase encargada del movimiento de la plataforma
+    /**
+     * Clase encargada del movimiento de la plataforma.
+     */
     private class MovimientoPlataforma extends KeyAdapter {
+        /**
+         * KeyListener que si se pulsa las flechas laterales mueve la plataforma a su
+         * respectivo lado.
+         * Si se pulsa la flecha de arriba mueve la pelota, ya que inicia el Timer que
+         * se encarga de moverla.
+         */
         @Override
         public void keyPressed(KeyEvent e) {
             Point nuevoPunto = plataforma.getLocation();
@@ -188,8 +233,13 @@ public class PanelJuego extends JPanel {
         }
     }
 
-    // Clase encargada de actulizar las fisicas.
+    /**
+     * Clase encargada de actulizar las fisicas.
+     */
     private class MovimientosPelota implements ActionListener {
+        /**
+         * Inicializa las propiedades de los parametros.
+         */
         public MovimientosPelota() {
             velocidad = 4;
             posicionX = pelota.getLocation().x;
@@ -198,12 +248,18 @@ public class PanelJuego extends JPanel {
             direccionY = true;
         }
 
+        /**
+         * Calcula las fisicas de la pelota y su respuesta a la plataforma y los
+         * ladrillos que toca.
+         */
         @Override
         public void actionPerformed(ActionEvent e) {
+            // Detecta que ladrillo ha sido tocado.
             for (int i = 0; i < bricks.length; i++) {
                 if (bricks[i] != null) {
                     if (bricks[i].isVisible()) {
                         if (bricks[i].getBounds().intersects(pelota.getBounds())) {
+                            // Detecta que tipo de hitbox a tocado.
                             for (int j = 0; j < hitBoxBricksEsquinas[i].length; j++) {
                                 if (hitBoxBricksEsquinas[i][j].isVisible()) {
                                     if (hitBoxBricksEsquinas[i][j].getBounds().intersects(pelota.getBounds())) {
@@ -287,7 +343,7 @@ public class PanelJuego extends JPanel {
                                     }
                                 }
                             }
-                            if (durezaLadrillo(bricks[i])) {
+                            if (romperLadrillo(bricks[i])) {
                                 bricks[i].setVisible(false);
                             }
                             ventanaPrincipal.panelPuntuacion.puntuacion += 100;
@@ -297,7 +353,7 @@ public class PanelJuego extends JPanel {
                     }
                 }
             }
-
+            // Detecta si la plataforma ha tocado la pelota.
             if (plataforma.getBounds().intersects(pelota.getBounds())) {
                 for (int j = 0; j < 2; j++) {
                     if (hitBoxPlataformaEsquinas[j].getBounds().intersects(pelota.getBounds())) {
@@ -326,6 +382,7 @@ public class PanelJuego extends JPanel {
 
             }
 
+            // Detecta los bordes del panel
             if (pelota.getLocation().x <= 0) {
                 direccionX = true;
             }
@@ -338,6 +395,8 @@ public class PanelJuego extends JPanel {
                 direccionY = true;
             }
 
+            // Si cae para reiniciar la partida hasta que se quede sin vidas y se vuelve a
+            // empezar.
             if (pelota.getLocation().y >= 440) {
                 ventanaPrincipal.panelPuntuacion.vidas--;
                 ventanaPrincipal.panelPuntuacion.updateLabels();
@@ -368,6 +427,8 @@ public class PanelJuego extends JPanel {
                 }
             }
 
+            // Mueve en x e y dependiendo la dirreccion que lleve true es positivo y false
+            // negativo.
             if (direccionX) {
                 posicionX += velocidad;
             } else {
@@ -383,6 +444,9 @@ public class PanelJuego extends JPanel {
             pelota.setLocation(posicionX, posicionY);
         }
 
+        /**
+         * Vuelve los parametros a los datos por defecto al empezar otra ronda.
+         */
         private void actualizarParametros() {
             posicionX = pelota.getLocation().x;
             posicionY = pelota.getLocation().y;
@@ -390,7 +454,14 @@ public class PanelJuego extends JPanel {
             direccionY = true;
         }
 
-        private boolean durezaLadrillo(JLabel brick) {
+        /**
+         * Comprueba que si rompe un ladrillo no tenga mas capas, devuelve true si es la
+         * ultima capa y false si hay mas.
+         * 
+         * @param brick Ladrillo que se comprueba que tiene mas capas.
+         * @return Devuelve truee si no hay mas capas y false si hay mas.
+         */
+        private boolean romperLadrillo(JLabel brick) {
             if (brick.getIcon().toString().contains("Brick2.png")) {
                 brick.setIcon(new ImageIcon(PanelJuego.class.getResource("\\img\\Brick1.png")));
                 return false;
@@ -399,22 +470,70 @@ public class PanelJuego extends JPanel {
             }
         }
 
+        /**
+         * Valor de la velocidad.
+         */
         int velocidad;
+        /**
+         * Valor de la posicion x de la pelota.
+         */
         int posicionX;
+        /**
+         * Valor de la posicion y de la pelota.
+         */
         int posicionY;
+        /**
+         * Valor de la direccion que lleva la pelota true positivo y false neativo.
+         */
         boolean direccionX;
+        /**
+         * Valor de la direccion que lleva la pelota true positivo y false neativo.
+         */
         boolean direccionY;
     }
 
+    /**
+     * Array de ladrillos del mapa.
+     */
     JLabel[] bricks;
+    /**
+     * Array bidimensional para las hitboxs de las esquinas de todos los ladrillos.
+     */
     JLabel[][] hitBoxBricksEsquinas;
+    /**
+     * Array bidimensional para las hitboxs de los laterales de todos los ladrillos.
+     */
     JLabel[][] hitBoxBricksLaterales;
-    JLabel[] hitBoxPlataformaEsquinas;
-    JLabel[] hitBoxPlataformaLateral;
+    /**
+     * Plataforma del juego.
+     */
     JLabel plataforma;
+    /**
+     * Array para las hitboxs de las esquinas de la plataforma.
+     */
+    JLabel[] hitBoxPlataformaEsquinas;
+    /**
+     * Array para las hitboxs de los laterales de la plataforma.
+     */
+    JLabel[] hitBoxPlataformaLateral;
+    /**
+     * Pelota deel juego.
+     */
     JLabel pelota;
-    Timer fpsPelota;
+    /**
+     * Valor del JFrame donde esta el juego.
+     */
     VentanaPrincipal ventanaPrincipal;
+    /**
+     * Clase encargada del movimiento de la pelota
+     */
     MovimientosPelota movimientosPelota;
+    /**
+     * Clase encargada de iniciar el movimiento de la pelota cada cierto timpo.
+     */
+    Timer fpsPelota;
+    /**
+     * Clas encargada del movimiento de la plataforma.
+     */
     MovimientoPlataforma movimientoPlataforma = new MovimientoPlataforma();
 }
