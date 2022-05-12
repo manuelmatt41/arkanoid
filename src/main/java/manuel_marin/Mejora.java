@@ -10,7 +10,6 @@ public class Mejora extends JLabel {
         super(new ImageIcon(url));
         setProbabilidad(probabilidad);
     }
-
     public void setProbabilidad(int probabilidad) {
         this.probabilidad = probabilidad;
     }
