@@ -19,7 +19,7 @@ public class VentanaPrincipal extends JFrame {
         setVisible(true);
         setSize(600, 600);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     }
 
     PanelJuego panelJuego;

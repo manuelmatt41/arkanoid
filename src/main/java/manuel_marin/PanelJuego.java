@@ -23,11 +23,11 @@ public class PanelJuego extends JPanel {
 
     private void iniciarComponentes() {
         int x = 0, y = 0;
-        lblBricks = new JLabel[36];
-        hitBoxBricksEsquinas = new JLabel[lblBricks.length][4];
-        hitBoxBricksLaterales = new JLabel[lblBricks.length][4];
+        bricks = new JLabel[36];
+        hitBoxBricksEsquinas = new JLabel[bricks.length][4];
+        hitBoxBricksLaterales = new JLabel[bricks.length][4];
 
-        for (int i = 0; i < lblBricks.length; i++) {
+        for (int i = 0; i < bricks.length; i++) {
             JLabel lbl = new JLabel(new ImageIcon(PanelJuego.class.getResource(pathImg[0])));
             lbl.setSize(lbl.getPreferredSize());
             lbl.setLocation(x, y);
@@ -36,7 +36,7 @@ public class PanelJuego extends JPanel {
             hitBoxBricksLaterales[i] = posicionHitBoxLaterales(lbl, hitBoxBricksEsquinas[i]);
             // lbl.setVisible(false);
             add(lbl);
-            lblBricks[i] = lbl;
+            bricks[i] = lbl;
 
             for (int j = 0; j < hitBoxBricksEsquinas[i].length; j++) {
                 add(hitBoxBricksEsquinas[i][j]);
@@ -54,26 +54,25 @@ public class PanelJuego extends JPanel {
             }
         }
 
-        lblPlataforma = new JLabel(new ImageIcon(PanelJuego.class.getResource("\\img\\Plataforma.png")));
-        lblPlataforma.setSize(lblPlataforma.getPreferredSize());
-        lblPlataforma.setLocation(250, 530);
-        lblPlataforma.addKeyListener(movimientoPlataforma);
-        add(lblPlataforma);
+        plataforma = new JLabel(new ImageIcon(PanelJuego.class.getResource("\\img\\Plataforma.png")));
+        plataforma.setSize(plataforma.getPreferredSize());
+        plataforma.setLocation(250, 530);
+        plataforma.addKeyListener(movimientoPlataforma);
+        add(plataforma);
 
-        hitBoxPlataforma = posicionHitBoxEsquinas(lblPlataforma);
+        hitBoxPlataforma = posicionHitBoxEsquinas(plataforma);
         for (int i = 0; i < hitBoxPlataforma.length; i++) {
             add(hitBoxPlataforma[i]);
         }
 
-        lblCircle = new JLabel(new ImageIcon(PanelJuego.class.getResource("\\img\\Pelota.png")));
-        lblCircle.setSize(20, 20);
-        lblCircle.setLocation(300, 512);
-        add(lblCircle);
+        pelota = new JLabel(new ImageIcon(PanelJuego.class.getResource("\\img\\Pelota.png")));
+        pelota.setSize(20, 20);
+        pelota.setLocation(300, 512);
+        add(pelota);
 
-        movimientosPelota = new MovimientosPelota(lblCircle);
+        movimientosPelota = new MovimientosPelota(pelota);
 
         fpsPelota = new Timer(17, movimientosPelota);
-        fpsPelota.start();
         addKeyListener(movimientoPlataforma);
     }
 
@@ -142,34 +141,42 @@ public class PanelJuego extends JPanel {
         return hitboxs;
     }
 
+    // Clase encargada del movimiento de la plataforma
     private class MovimientoPlataforma extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
-            Point nuevoPunto = lblPlataforma.getLocation();
+            Point nuevoPunto = plataforma.getLocation();
 
             if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                if (lblPlataforma.getLocation().x >= 0) {
+                if (plataforma.getLocation().x >= 0) {
                     nuevoPunto.x -= 15;
 
                     for (int i = 0; i < hitBoxPlataforma.length; i++) {
-                        hitBoxPlataforma[i].setLocation(hitBoxPlataforma[i].getLocation().x - 15, hitBoxPlataforma[i].getLocation().y);
+                        hitBoxPlataforma[i].setLocation(hitBoxPlataforma[i].getLocation().x - 15,
+                                hitBoxPlataforma[i].getLocation().y);
                     }
                 }
-                lblPlataforma.setLocation(nuevoPunto);
+                plataforma.setLocation(nuevoPunto);
 
             }
 
             if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                if (lblPlataforma.getLocation().x <= 500) {
+                if (plataforma.getLocation().x <= 500) {
                     nuevoPunto.x += 15;
 
                     for (int i = 0; i < hitBoxPlataforma.length; i++) {
-                        hitBoxPlataforma[i].setLocation(hitBoxPlataforma[i].getLocation().x + 15, hitBoxPlataforma[i].getLocation().y);
+                        hitBoxPlataforma[i].setLocation(hitBoxPlataforma[i].getLocation().x + 15,
+                                hitBoxPlataforma[i].getLocation().y);
                     }
                 }
-                lblPlataforma.setLocation(nuevoPunto);
+                plataforma.setLocation(nuevoPunto);
             }
 
+            if (e.getKeyCode() == KeyEvent.VK_UP) {
+                if (!fpsPelota.isRunning()) {
+                    fpsPelota.start();
+                }
+            }
         }
     }
 
@@ -186,9 +193,9 @@ public class PanelJuego extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            for (int i = 0; i < lblBricks.length; i++) {
-                if (lblBricks[i].isVisible()) {
-                    if (lblBricks[i].getBounds().intersects(pelota.getBounds())) {
+            for (int i = 0; i < bricks.length; i++) {
+                if (bricks[i].isVisible()) {
+                    if (bricks[i].getBounds().intersects(pelota.getBounds())) {
                         for (int j = 0; j < hitBoxBricksEsquinas[i].length; j++) {
                             if (hitBoxBricksEsquinas[i][j].isVisible()) {
                                 if (hitBoxBricksEsquinas[i][j].getBounds().intersects(pelota.getBounds())) {
@@ -259,12 +266,14 @@ public class PanelJuego extends JPanel {
                             }
                         }
 
-                        lblBricks[i].setVisible(false);
+                        bricks[i].setVisible(false);
+                        ventanaPrincipal.panelPuntuacion.puntuacion += 100;
+                        ventanaPrincipal.panelPuntuacion.updateLabels();
                     }
                 }
             }
 
-            if (lblPlataforma.getBounds().intersects(pelota.getBounds())) {
+            if (plataforma.getBounds().intersects(pelota.getBounds())) {
                 for (int j = 0; j < hitBoxPlataforma.length; j++) {
                     if (hitBoxPlataforma[j].getBounds().intersects(pelota.getBounds())) {
                         if (j == 0) {
@@ -297,7 +306,28 @@ public class PanelJuego extends JPanel {
             }
 
             if (pelota.getLocation().y >= 580) {
-                direccionY = false;
+                ventanaPrincipal.panelPuntuacion.vidas--;
+                ventanaPrincipal.panelPuntuacion.updateLabels();
+
+               if (ventanaPrincipal.panelPuntuacion.vidas > 0) {
+                pelota.setLocation(300, 512);
+                plataforma.setLocation(250, 530);
+
+                JLabel[] reinicioHitBox = posicionHitBoxEsquinas(plataforma);
+
+                for (int i = 0; i < hitBoxPlataforma.length; i++) {
+                    hitBoxPlataforma[i].setLocation(reinicioHitBox[i].getLocation());
+                }
+
+                actualizarParametros();
+                fpsPelota.stop();
+                return;
+               } else {
+                   ventanaPrincipal.dispose();
+                   new VentanaPrincipal();
+                   fpsPelota.stop();
+                   return;
+               }
             }
 
             if (direccionX) {
@@ -315,6 +345,13 @@ public class PanelJuego extends JPanel {
             pelota.setLocation(posicionX, posicionY);
         }
 
+        private void actualizarParametros() {
+            posicionX = pelota.getLocation().x;
+            posicionY = pelota.getLocation().y;
+            direccionX = false;
+            direccionY = false;
+        }
+
         int velocidad;
         int posicionX;
         int posicionY;
@@ -324,12 +361,12 @@ public class PanelJuego extends JPanel {
     }
 
     String[] pathImg = { "\\img\\Brick1.png" };
-    JLabel[] lblBricks;
+    JLabel[] bricks;
     JLabel[][] hitBoxBricksEsquinas;
     JLabel[][] hitBoxBricksLaterales;
     JLabel[] hitBoxPlataforma;
-    JLabel lblPlataforma;
-    JLabel lblCircle;
+    JLabel plataforma;
+    JLabel pelota;
     Timer fpsPelota;
     Timer fpsMejoras;
     VentanaPrincipal ventanaPrincipal;
