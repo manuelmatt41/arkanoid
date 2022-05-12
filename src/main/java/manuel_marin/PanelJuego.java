@@ -23,7 +23,7 @@ public class PanelJuego extends JPanel {
 
     private void iniciarComponentes() {
         int x = 0, y = 0;
-        bricks = new JLabel[36];
+        bricks = new JLabel[42];
         hitBoxBricksEsquinas = new JLabel[bricks.length][4];
         hitBoxBricksLaterales = new JLabel[bricks.length][4];
 
@@ -46,7 +46,7 @@ public class PanelJuego extends JPanel {
                 add(hitBoxBricksLaterales[i][j]);
             }
 
-            if ((i + 1) % 6 == 0) {
+            if ((i + 1) % 7 == 0) {
                 x = 0;
                 y += 32;
             } else {
@@ -56,7 +56,7 @@ public class PanelJuego extends JPanel {
 
         plataforma = new JLabel(new ImageIcon(PanelJuego.class.getResource("\\img\\Plataforma.png")));
         plataforma.setSize(plataforma.getPreferredSize());
-        plataforma.setLocation(250, 530);
+        plataforma.setLocation(250, 430);
         plataforma.addKeyListener(movimientoPlataforma);
         add(plataforma);
 
@@ -67,7 +67,7 @@ public class PanelJuego extends JPanel {
 
         pelota = new JLabel(new ImageIcon(PanelJuego.class.getResource("\\img\\Pelota.png")));
         pelota.setSize(20, 20);
-        pelota.setLocation(300, 512);
+        pelota.setLocation(300, 412);
         add(pelota);
 
         movimientosPelota = new MovimientosPelota(pelota);
@@ -161,7 +161,7 @@ public class PanelJuego extends JPanel {
             }
 
             if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                if (plataforma.getLocation().x <= 500) {
+                if (plataforma.getLocation().x <= 600) {
                     nuevoPunto.x += 15;
 
                     for (int i = 0; i < hitBoxPlataforma.length; i++) {
@@ -284,7 +284,7 @@ public class PanelJuego extends JPanel {
                                 direccionX = false;
                             }
                             direccionY = false;
-
+                            velocidad = 6;
                         }
 
                         if (j == 1) {
@@ -293,10 +293,12 @@ public class PanelJuego extends JPanel {
                             }
                             direccionY = false;
 
+                            velocidad = 6;
                         }
-                        velocidad = 6;
                     }
                 }
+
+                direccionY = false;
 
             }
 
@@ -304,7 +306,7 @@ public class PanelJuego extends JPanel {
                 direccionX = true;
             }
 
-            if (pelota.getLocation().x >= 580) {
+            if (pelota.getLocation().x >= 680) {
                 direccionX = false;
             }
 
@@ -312,13 +314,13 @@ public class PanelJuego extends JPanel {
                 direccionY = true;
             }
 
-            if (pelota.getLocation().y >= 580) {
+            if (pelota.getLocation().y >= 480) {
                 ventanaPrincipal.panelPuntuacion.vidas--;
                 ventanaPrincipal.panelPuntuacion.updateLabels();
 
                 if (ventanaPrincipal.panelPuntuacion.vidas > 0) {
-                    pelota.setLocation(300, 512);
-                    plataforma.setLocation(250, 530);
+                    pelota.setLocation(300, 412);
+                    plataforma.setLocation(250, 430);
 
                     JLabel[] reinicioHitBox = posicionHitBoxEsquinas(plataforma);
 

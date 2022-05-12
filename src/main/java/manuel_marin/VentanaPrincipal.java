@@ -17,7 +17,7 @@ public class VentanaPrincipal extends JFrame {
 
         setUndecorated(true);
         setVisible(true);
-        setSize(600, 600);
+        setSize(700, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     }
