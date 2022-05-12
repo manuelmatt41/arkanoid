@@ -1,5 +1,6 @@
 package manuel_marin;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,13 +24,21 @@ public class PanelJuego extends JPanel {
     private void iniciarComponentes() {
         int x = 0, y = 0;
         lblBricks = new JLabel[36];
-        for (int i = 0; i < 36; i++) {
+        hitBoxBricks = new JLabel[lblBricks.length][4];
+
+        for (int i = 0; i < lblBricks.length; i++) {
             JLabel lbl = new JLabel(new ImageIcon(PanelJuego.class.getResource(pathImg[0])));
             lbl.setSize(lbl.getPreferredSize());
             lbl.setLocation(x, y);
             lbl.addKeyListener(movimientoPlataforma);
+            hitBoxBricks[i] = posicionHitBox(lbl);
             add(lbl);
             lblBricks[i] = lbl;
+
+            for (int j = 0; j < hitBoxBricks[i].length; j++) {
+                add(hitBoxBricks[i][j]);
+            }
+            
             if ((i + 1) % 6 == 0) {
                 x = 0;
                 y += 32;
@@ -54,6 +63,31 @@ public class PanelJuego extends JPanel {
         fpsPelota = new Timer(17, movimientosPelota);
         fpsPelota.start();
         addKeyListener(movimientoPlataforma);
+    }
+
+    private JLabel[] posicionHitBox(JLabel brick) {
+        JLabel[] hitboxs = new JLabel[4];
+        Point[] posicionesHitBoxs = new Point[4];
+
+        posicionesHitBoxs[0] = new Point(brick.getLocation());
+        posicionesHitBoxs[1] = new Point(
+                brick.getLocation().x + brick.getBounds().width - (brick.getBounds().width / 10), brick.getLocation().y);
+        posicionesHitBoxs[2] = new Point(brick.getLocation().x,
+                brick.getLocation().y + brick.getBounds().height - (brick.getBounds().height / 4));
+        posicionesHitBoxs[3] = new Point(
+                brick.getLocation().x + brick.getBounds().width - (brick.getBounds().width / 10),
+                brick.getLocation().y + brick.getBounds().height - (brick.getBounds().height / 4));
+
+        for (int i = 0; i < hitboxs.length; i++) {
+            JLabel hitbox = new JLabel();
+            hitbox.setSize(10, 8);
+            hitbox.setLocation(posicionesHitBoxs[i]);
+            hitbox.setOpaque(true);
+            hitbox.setBackground(Color.green);
+            hitboxs[i] = hitbox;
+        }
+
+        return hitboxs;
     }
 
     private class MovimientoPlataforma extends KeyAdapter {
@@ -98,10 +132,55 @@ public class PanelJuego extends JPanel {
             for (int i = 0; i < lblBricks.length; i++) {
                 if (lblBricks[i].isVisible()) {
                     if (lblBricks[i].getBounds().intersects(pelota.getBounds())) {
-                        lblBricks[i].setVisible(false);
+                        for (int j = 0; j < hitBoxBricks[i].length; j++) {
+                            if (hitBoxBricks[i][j].isVisible()) {
+                                if (hitBoxBricks[i][j].getBounds().intersects(pelota.getBounds())) {
+                                    if (j == 0) {
+                                        if (direccionX) {
+                                            direccionX = false;
+                                        }
 
-                        direccionX = ladoGolpeHorizontal(lblBricks[i]);
-                        direccionY = ladoGolpeVertical(lblBricks[i]);
+                                        if (direccionY) {
+                                            direccionY = false;
+                                        }
+                                    }
+
+                                    if (j == 1) {
+                                       if (!direccionX) {
+                                        direccionX = true;
+                                       }
+
+                                       if (direccionY) {
+                                        direccionY = false;
+                                       }
+                                    }
+
+                                    if (j == 2) {
+                                        if (direccionX) {
+                                            direccionX = false;
+                                           }
+    
+                                           if (!direccionY) {
+                                            direccionY = true;
+                                           }
+                                    }
+    
+                                    if (j == 3) {
+                                        if (!direccionX) {
+                                            direccionX = true;
+                                           }
+    
+                                           if (!direccionY) {
+                                            direccionY = true;
+                                           }
+                                    }
+                                }
+
+                                hitBoxBricks[i][j].setVisible(false);
+                            }
+                        }
+
+                        lblBricks[i].setVisible(false);
                     }
                 }
             }
@@ -136,38 +215,6 @@ public class PanelJuego extends JPanel {
 
             pelota.setLocation(posicionX, posicionY);
         }
-        
-        private boolean ladoGolpeHorizontal(JLabel brick) {
-            int derecha = brick.getBounds().width + brick.getLocation().x;
-            int izquierda = brick.getLocation().x;
-            int medio = brick.getBounds().width / 2 + brick.getLocation().x;
-            boolean cambioDireccion = direccionX;
-            if (pelota.getLocation().x <= derecha && pelota.getLocation().x >= medio) {
-                cambioDireccion = true;
-            }
-
-            if (pelota.getLocation().x >= izquierda && pelota.getLocation().x <= medio) {
-                cambioDireccion = false;
-            }
-
-            return cambioDireccion;
-        }
-
-        private boolean ladoGolpeVertical(JLabel brick) {
-            int abajo = brick.getBounds().height + brick.getLocation().y;
-            int arriba = brick.getLocation().y;
-            int medio = brick.getBounds().height / 2 + brick.getLocation().y;
-            boolean cambioDireccion = direccionX;
-            if (pelota.getLocation().x <= abajo && pelota.getLocation().x >= medio) {
-                cambioDireccion = true;
-            }
-
-            if (pelota.getLocation().x >= arriba && pelota.getLocation().x <= medio) {
-                cambioDireccion = false;
-            }
-
-            return cambioDireccion;
-        }
 
         int velocidad;
         int posicionX;
@@ -177,9 +224,9 @@ public class PanelJuego extends JPanel {
         JLabel pelota;
     }
 
-
     String[] pathImg = { "\\img\\Brick1.png" };
     JLabel[] lblBricks;
+    JLabel[][] hitBoxBricks;
     JLabel lblPlataforma;
     JLabel lblCircle;
     Timer fpsPelota;
