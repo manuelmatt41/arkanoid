@@ -406,7 +406,6 @@ public class PanelJuego extends JPanel {
         boolean direccionY;
     }
 
-    String[] pathImg = { "\\img\\Brick1.png" };
     JLabel[] bricks;
     JLabel[][] hitBoxBricksEsquinas;
     JLabel[][] hitBoxBricksLaterales;
@@ -415,7 +414,6 @@ public class PanelJuego extends JPanel {
     JLabel plataforma;
     JLabel pelota;
     Timer fpsPelota;
-    Timer fpsMejoras;
     VentanaPrincipal ventanaPrincipal;
     MovimientosPelota movimientosPelota;
     MovimientoPlataforma movimientoPlataforma = new MovimientoPlataforma();
