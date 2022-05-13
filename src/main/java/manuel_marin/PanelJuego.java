@@ -22,13 +22,14 @@ public class PanelJuego extends JPanel {
      * 
      * @param ventanaPrincipal El JFrame donde se carga la clase.
      */
-    public PanelJuego(VentanaPrincipal ventanaPrincipal) {
+    public PanelJuego(VentanaPrincipal ventanaPrincipal, String nivel) {
         setLayout(null);
         this.ventanaPrincipal = ventanaPrincipal;
+        this.nivel = nivel;
         iniciarComponentes();
 
-        setFocusable(true);
         setBackground(new Color(147, 176, 171));
+        setFocusable(true);
     }
 
     /**
@@ -37,7 +38,7 @@ public class PanelJuego extends JPanel {
     private void iniciarComponentes() {
         // Crea los ladrillos juntos a sus hitboxs
         int x = 0, y = 0;
-        bricks = CargaDeNiveles.getNivel(new File("src\\main\\java\\manuel_marin\\niveles\\nivel1.txt"));
+        bricks = CargaDeNiveles.cargarNivel(new File(nivel));
         hitBoxBricksEsquinas = new JLabel[bricks.length][4];
         hitBoxBricksLaterales = new JLabel[bricks.length][4];
 
@@ -98,6 +99,8 @@ public class PanelJuego extends JPanel {
 
         fpsPelota = new Timer(17, movimientosPelota);
         addKeyListener(movimientoPlataforma);
+
+        fpsPlataforma = new Timer(17, movimientoPlataforma);
     }
 
     /**
@@ -185,7 +188,7 @@ public class PanelJuego extends JPanel {
     /**
      * Clase encargada del movimiento de la plataforma.
      */
-    private class MovimientoPlataforma extends KeyAdapter {
+    private class MovimientoPlataforma extends KeyAdapter implements ActionListener {
         /**
          * KeyListener que si se pulsa las flechas laterales mueve la plataforma a su
          * respectivo lado.
@@ -194,35 +197,15 @@ public class PanelJuego extends JPanel {
          */
         @Override
         public void keyPressed(KeyEvent e) {
-            Point nuevoPunto = plataforma.getLocation();
 
             if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                if (plataforma.getLocation().x >= 0) {
-                    nuevoPunto.x -= 15;
-
-                    for (int i = 0; i < hitBoxPlataformaEsquinas.length; i++) {
-                        hitBoxPlataformaEsquinas[i].setLocation(hitBoxPlataformaEsquinas[i].getLocation().x - 15,
-                                hitBoxPlataformaEsquinas[i].getLocation().y);
-                        hitBoxPlataformaLateral[i].setLocation(hitBoxPlataformaLateral[i].getLocation().x - 15,
-                                hitBoxPlataformaLateral[i].getLocation().y);
-                    }
-                }
-                plataforma.setLocation(nuevoPunto);
-
+                direccion = false;
+                fpsPlataforma.start();
             }
 
             if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                if (plataforma.getLocation().x <= 600) {
-                    nuevoPunto.x += 15;
-
-                    for (int i = 0; i < hitBoxPlataformaEsquinas.length; i++) {
-                        hitBoxPlataformaEsquinas[i].setLocation(hitBoxPlataformaEsquinas[i].getLocation().x + 15,
-                                hitBoxPlataformaEsquinas[i].getLocation().y);
-                        hitBoxPlataformaLateral[i].setLocation(hitBoxPlataformaLateral[i].getLocation().x + 15,
-                                hitBoxPlataformaLateral[i].getLocation().y);
-                    }
-                }
-                plataforma.setLocation(nuevoPunto);
+                direccion = true;
+                fpsPlataforma.start();
             }
 
             if (e.getKeyCode() == KeyEvent.VK_UP) {
@@ -231,6 +214,44 @@ public class PanelJuego extends JPanel {
                 }
             }
         }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            fpsPlataforma.stop();
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Point nuevoPunto = plataforma.getLocation();
+
+            if (direccion) {
+                if (plataforma.getLocation().x <= 600) {
+                    nuevoPunto.x += 8;
+
+                    for (int i = 0; i < hitBoxPlataformaEsquinas.length; i++) {
+                        hitBoxPlataformaEsquinas[i].setLocation(hitBoxPlataformaEsquinas[i].getLocation().x + 8,
+                                hitBoxPlataformaEsquinas[i].getLocation().y);
+                        hitBoxPlataformaLateral[i].setLocation(hitBoxPlataformaLateral[i].getLocation().x + 8,
+                                hitBoxPlataformaLateral[i].getLocation().y);
+                    }
+                }
+                plataforma.setLocation(nuevoPunto);
+            } else {
+                if (plataforma.getLocation().x >= 0) {
+                    nuevoPunto.x -= 8;
+
+                    for (int i = 0; i < hitBoxPlataformaEsquinas.length; i++) {
+                        hitBoxPlataformaEsquinas[i].setLocation(hitBoxPlataformaEsquinas[i].getLocation().x - 8,
+                                hitBoxPlataformaEsquinas[i].getLocation().y);
+                        hitBoxPlataformaLateral[i].setLocation(hitBoxPlataformaLateral[i].getLocation().x - 8,
+                                hitBoxPlataformaLateral[i].getLocation().y);
+                    }
+                }
+                plataforma.setLocation(nuevoPunto);
+            }
+        }
+
+        boolean direccion;
     }
 
     /**
@@ -246,6 +267,13 @@ public class PanelJuego extends JPanel {
             posicionY = pelota.getLocation().y;
             direccionX = false;
             direccionY = true;
+            ladrillosRotos = 0;
+
+            for (int i = 0; i < bricks.length; i++) {
+                if (bricks[i] != null) {
+                    ladrillosRotos++;
+                }
+            }
         }
 
         /**
@@ -345,6 +373,8 @@ public class PanelJuego extends JPanel {
                             }
                             if (romperLadrillo(bricks[i])) {
                                 bricks[i].setVisible(false);
+                                ladrillosRotos--;
+
                             }
                             ventanaPrincipal.panelPuntuacion.puntuacion += 100;
                             ventanaPrincipal.panelPuntuacion.updateLabels();
@@ -353,6 +383,17 @@ public class PanelJuego extends JPanel {
                     }
                 }
             }
+
+            if (ladrillosRotos == 0) {
+
+                ventanaPrincipal.panelMenuJuego.setVisible(true);
+
+                ventanaPrincipal.panelJuego.setVisible(false);
+                ventanaPrincipal.panelPuntuacion.setVisible(false);
+                ventanaPrincipal.remove(ventanaPrincipal.panelPuntuacion);
+                ventanaPrincipal.remove(ventanaPrincipal.panelJuego);
+            }
+
             // Detecta si la plataforma ha tocado la pelota.
             if (plataforma.getBounds().intersects(pelota.getBounds())) {
                 for (int j = 0; j < 2; j++) {
@@ -490,6 +531,7 @@ public class PanelJuego extends JPanel {
          * Valor de la direccion que lleva la pelota true positivo y false neativo.
          */
         boolean direccionY;
+        int ladrillosRotos;
     }
 
     /**
@@ -536,4 +578,6 @@ public class PanelJuego extends JPanel {
      * Clas encargada del movimiento de la plataforma.
      */
     MovimientoPlataforma movimientoPlataforma = new MovimientoPlataforma();
+    Timer fpsPlataforma;
+    String nivel;
 }

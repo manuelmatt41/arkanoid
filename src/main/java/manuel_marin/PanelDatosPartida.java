@@ -30,6 +30,7 @@ public class PanelDatosPartida extends JPanel {
         add(lblVidas);
 
         setBackground(new Color(147, 176, 171));
+        setFocusable(false);
     }
 
     /**
