@@ -15,15 +15,9 @@ public class VentanaPrincipal extends JFrame {
         super("Araknoid");
         setLayout(new BorderLayout());
 
-        // panelPuntuacion = new PanelDatosPartida();
-        // add(panelPuntuacion, BorderLayout.NORTH);
+        panelMenuPrincipal = new PanelMenuPrincipal(this);
+        add(panelMenuPrincipal, BorderLayout.CENTER);
 
-        // panelJuego = new PanelJuego(this);
-        // add(panelJuego, BorderLayout.CENTER);
-
-        panelMenuJuego = new PanelMenuJuego(this);
-        add(panelMenuJuego, BorderLayout.CENTER);
-        
         setUndecorated(true);
         setVisible(true);
         setSize(700, 500);
@@ -39,5 +33,7 @@ public class VentanaPrincipal extends JFrame {
      * Panel donde se encuentra los datos de la partida.
      */
     PanelDatosPartida panelPuntuacion;
-    PanelMenuJuego panelMenuJuego;
+    PanelMenuNiveles panelMenuJuego;
+    PanelCreacionNiveles panelCreacionNiveles;
+    PanelMenuPrincipal panelMenuPrincipal;
 }
