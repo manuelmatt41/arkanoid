@@ -35,8 +35,8 @@ import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-public class PanelMenuNiveles extends JPanel {
-    public PanelMenuNiveles(VentanaPrincipal ventanaPrincipal) {
+public class LevelSelectionPanel extends JPanel {
+    public LevelSelectionPanel(ArkanoidFrame ventanaPrincipal) {
         setLayout(null);
 
         this.ventanaPrincipal = ventanaPrincipal;
@@ -62,45 +62,45 @@ public class PanelMenuNiveles extends JPanel {
     }
 
     private void iniciarCantidadNiveles() {
-        File carpetaNiveles = new File(PanelMenuNiveles.class.getResource("niveles").getPath());
+        File carpetaNiveles = new File(LevelSelectionPanel.class.getResource("niveles").getPath());
 
         niveles = carpetaNiveles.listFiles();
     }
 
     private class ActionManagement implements ActionListener {
-        public ActionManagement(PanelMenuNiveles panelMenuJuego) {
+        public ActionManagement(LevelSelectionPanel panelMenuJuego) {
             this.panelMenuJuego = panelMenuJuego;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            ventanaPrincipal.panelPuntuacion = new PanelDatosPartida();
-            ventanaPrincipal.add(ventanaPrincipal.panelPuntuacion, BorderLayout.NORTH);
+            ventanaPrincipal.gameDataPanel = new GameDataPanel();
+            ventanaPrincipal.add(ventanaPrincipal.gameDataPanel, BorderLayout.NORTH);
 
-            ventanaPrincipal.panelJuego = new PanelJuego(ventanaPrincipal, e.getActionCommand());
-            ventanaPrincipal.add(ventanaPrincipal.panelJuego, BorderLayout.CENTER);
+            ventanaPrincipal.gamePanel = new GamePanel(ventanaPrincipal, e.getActionCommand());
+            ventanaPrincipal.add(ventanaPrincipal.gamePanel, BorderLayout.CENTER);
             
             panelMenuJuego.setVisible(false);
         }
 
-        PanelMenuNiveles panelMenuJuego;
+        LevelSelectionPanel panelMenuJuego;
     }
 
     private class KeyHandler extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
             if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                ventanaPrincipal.panelMenuPrincipal = new PanelMenuPrincipal(ventanaPrincipal);
-                ventanaPrincipal.add(ventanaPrincipal.panelMenuPrincipal, BorderLayout.CENTER);
+                ventanaPrincipal.mainMenuPanel = new MainMenuPanel(ventanaPrincipal);
+                ventanaPrincipal.add(ventanaPrincipal.mainMenuPanel, BorderLayout.CENTER);
 
-                ventanaPrincipal.panelMenuJuego.setVisible(false);
-                ventanaPrincipal.remove(ventanaPrincipal.panelMenuJuego);
+                ventanaPrincipal.levelSelectionPanel.setVisible(false);
+                ventanaPrincipal.remove(ventanaPrincipal.levelSelectionPanel);
             }
         }
     }
 
     File[] niveles;
-    VentanaPrincipal ventanaPrincipal;
+    ArkanoidFrame ventanaPrincipal;
     ActionManagement actionManagement = new ActionManagement(this);
     KeyHandler keyHandler = new KeyHandler();
 }

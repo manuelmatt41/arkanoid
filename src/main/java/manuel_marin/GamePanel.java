@@ -41,13 +41,13 @@ import javax.swing.Timer;
 /**
  * Clase donde se muestra el juego.
  */
-public class PanelJuego extends JPanel {
+public class GamePanel extends JPanel {
     /**
      * inicializa las propiedades de los parametros.
      * 
      * @param ventanaPrincipal El JFrame donde se carga la clase.
      */
-    public PanelJuego(VentanaPrincipal ventanaPrincipal, String nivel) {
+    public GamePanel(ArkanoidFrame ventanaPrincipal, String nivel) {
         setLayout(null);
         this.ventanaPrincipal = ventanaPrincipal;
         this.nivel = nivel;
@@ -63,7 +63,7 @@ public class PanelJuego extends JPanel {
     private void iniciarComponentes() {
         // Crea los ladrillos juntos a sus hitboxs
         int x = 0, y = 0;
-        bricks = CargaDeNiveles.cargarNivel(new File(nivel));
+        bricks = LevelLoader.levelLoad(new File(nivel));
         hitBoxBricksEsquinas = new JLabel[bricks.length][4];
         hitBoxBricksLaterales = new JLabel[bricks.length][4];
 
@@ -95,7 +95,7 @@ public class PanelJuego extends JPanel {
         }
 
         // Crea la plataforma con sus hitboxs
-        plataforma = new JLabel(new ImageIcon(PanelJuego.class.getResource("\\img\\Plataforma.png")));
+        plataforma = new JLabel(new ImageIcon(GamePanel.class.getResource("\\img\\Plataforma.png")));
         plataforma.setSize(plataforma.getPreferredSize());
         plataforma.setLocation(250, 430);
         plataforma.addKeyListener(movimientoPlataforma);
@@ -114,7 +114,7 @@ public class PanelJuego extends JPanel {
         }
 
         // Crea la pelota
-        pelota = new JLabel(new ImageIcon(PanelJuego.class.getResource("\\img\\Pelota.png")));
+        pelota = new JLabel(new ImageIcon(GamePanel.class.getResource("\\img\\Pelota.png")));
         pelota.setSize(20, 20);
         pelota.setLocation(300, 412);
         add(pelota);
@@ -287,16 +287,16 @@ public class PanelJuego extends JPanel {
          * Inicializa las propiedades de los parametros.
          */
         public MovimientosPelota() {
-            velocidad = 4;
+            velocidadJuego = velocidadNormal;
             posicionX = pelota.getLocation().x;
             posicionY = pelota.getLocation().y;
             direccionX = false;
             direccionY = true;
-            ladrillosRotos = 0;
+            ladrillos = 0;
 
             for (int i = 0; i < bricks.length; i++) {
                 if (bricks[i] != null) {
-                    ladrillosRotos++;
+                    ladrillos++;
                 }
             }
         }
@@ -356,7 +356,7 @@ public class PanelJuego extends JPanel {
                                             }
                                         }
 
-                                        velocidad = 6;
+                                        velocidadJuego = velocidadAcelerada;
                                         if (bricks[i].getIcon().toString().contains("Brick1")) {
                                             for (int k = 0; k < hitBoxBricksEsquinas[i].length; k++) {
                                                 hitBoxBricksEsquinas[i][k].setVisible(false);
@@ -383,7 +383,7 @@ public class PanelJuego extends JPanel {
                                                     direccionY = true;
                                                 }
 
-                                                velocidad = 4;
+                                                velocidadJuego = velocidadNormal;
                                                 if (bricks[i].getIcon().toString().contains("Brick1")) {
                                                     for (int k = 0; k < hitBoxBricksEsquinas[i].length; k++) {
                                                         hitBoxBricksEsquinas[i][k].setVisible(false);
@@ -398,25 +398,25 @@ public class PanelJuego extends JPanel {
                             }
                             if (romperLadrillo(bricks[i])) {
                                 bricks[i].setVisible(false);
-                                ladrillosRotos--;
+                                ladrillos--;
 
                             }
-                            ventanaPrincipal.panelPuntuacion.puntuacion += 100;
-                            ventanaPrincipal.panelPuntuacion.updateLabels();
+                            ventanaPrincipal.gameDataPanel.puntuacion += 100;
+                            ventanaPrincipal.gameDataPanel.updateLabels();
                         }
 
                     }
                 }
             }
 
-            if (ladrillosRotos == 0) {
+            if (ladrillos == mapaVacio) {
 
-                ventanaPrincipal.panelMenuJuego.setVisible(true);
+                ventanaPrincipal.levelSelectionPanel.setVisible(true);
 
-                ventanaPrincipal.panelJuego.setVisible(false);
-                ventanaPrincipal.panelPuntuacion.setVisible(false);
-                ventanaPrincipal.remove(ventanaPrincipal.panelPuntuacion);
-                ventanaPrincipal.remove(ventanaPrincipal.panelJuego);
+                ventanaPrincipal.gamePanel.setVisible(false);
+                ventanaPrincipal.gameDataPanel.setVisible(false);
+                ventanaPrincipal.remove(ventanaPrincipal.gameDataPanel);
+                ventanaPrincipal.remove(ventanaPrincipal.gamePanel);
             }
 
             // Detecta si la plataforma ha tocado la pelota.
@@ -428,7 +428,7 @@ public class PanelJuego extends JPanel {
                                 direccionX = false;
                             }
                             direccionY = false;
-                            velocidad = 6;
+                            velocidadJuego = 6;
                         }
 
                         if (j == 1) {
@@ -437,11 +437,12 @@ public class PanelJuego extends JPanel {
                             }
                             direccionY = false;
 
-                            velocidad = 6;
+                            velocidadJuego = velocidadAcelerada;
                         }
                     } else {
                         if (hitBoxPlataformaLateral[0].getBounds().intersects(pelota.getBounds())) {
                             direccionY = false;
+                            velocidadJuego = velocidadNormal;
                         }
                     }
                 }
@@ -464,10 +465,10 @@ public class PanelJuego extends JPanel {
             // Si cae para reiniciar la partida hasta que se quede sin vidas y se vuelve a
             // empezar.
             if (pelota.getLocation().y >= 440) {
-                ventanaPrincipal.panelPuntuacion.vidas--;
-                ventanaPrincipal.panelPuntuacion.updateLabels();
+                ventanaPrincipal.gameDataPanel.vidas--;
+                ventanaPrincipal.gameDataPanel.updateLabels();
 
-                if (ventanaPrincipal.panelPuntuacion.vidas > 0) {
+                if (ventanaPrincipal.gameDataPanel.vidas > 0) {
                     pelota.setLocation(300, 412);
                     plataforma.setLocation(250, 430);
 
@@ -487,7 +488,7 @@ public class PanelJuego extends JPanel {
                     return;
                 } else {
                     ventanaPrincipal.dispose();
-                    new VentanaPrincipal();
+                    new ArkanoidFrame();
                     fpsPelota.stop();
                     return;
                 }
@@ -496,15 +497,15 @@ public class PanelJuego extends JPanel {
             // Mueve en x e y dependiendo la dirreccion que lleve true es positivo y false
             // negativo.
             if (direccionX) {
-                posicionX += velocidad;
+                posicionX += velocidadJuego;
             } else {
-                posicionX -= velocidad;
+                posicionX -= velocidadJuego;
             }
 
             if (direccionY) {
-                posicionY += velocidad;
+                posicionY += velocidadJuego;
             } else {
-                posicionY -= velocidad;
+                posicionY -= velocidadJuego;
             }
 
             pelota.setLocation(posicionX, posicionY);
@@ -529,7 +530,7 @@ public class PanelJuego extends JPanel {
          */
         private boolean romperLadrillo(JLabel brick) {
             if (brick.getIcon().toString().contains("Brick2.png")) {
-                brick.setIcon(new ImageIcon(PanelJuego.class.getResource("\\img\\Brick1.png")));
+                brick.setIcon(new ImageIcon(GamePanel.class.getResource("\\img\\Brick1.png")));
                 return false;
             } else {
                 return true;
@@ -539,7 +540,8 @@ public class PanelJuego extends JPanel {
         /**
          * Valor de la velocidad.
          */
-        int velocidad;
+        int velocidadJuego;
+        int velocidadNormal = 4;
         /**
          * Valor de la posicion x de la pelota.
          */
@@ -556,7 +558,9 @@ public class PanelJuego extends JPanel {
          * Valor de la direccion que lleva la pelota true positivo y false neativo.
          */
         boolean direccionY;
-        int ladrillosRotos;
+        int ladrillos;
+        int velocidadAcelerada = 6;
+        int mapaVacio = 0;
     }
 
     /**
@@ -590,7 +594,7 @@ public class PanelJuego extends JPanel {
     /**
      * Valor del JFrame donde esta el juego.
      */
-    VentanaPrincipal ventanaPrincipal;
+    ArkanoidFrame ventanaPrincipal;
     /**
      * Clase encargada del movimiento de la pelota
      */

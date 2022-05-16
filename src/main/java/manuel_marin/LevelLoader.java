@@ -32,7 +32,7 @@ import java.util.Scanner;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-public class CargaDeNiveles {
+public class LevelLoader {
     /**
      * Lee un archivo de texto con una determinada estructura para crear el diseño
      * de nivel del juego. De forma que sea un 8x7 de numeros donde el 0 es "aire",
@@ -42,7 +42,7 @@ public class CargaDeNiveles {
      * @return Devuelve un array de Jlabel que representan los ladrillos que hay en
      *         el mapa.
      */
-    public static JLabel[] cargarNivel(File nivel) {
+    public static JLabel[] levelLoad(File nivel) {
         JLabel[] mapa = new JLabel[56];
         int contador = 0;
         try (Scanner sc = new Scanner(nivel)) {
@@ -57,13 +57,13 @@ public class CargaDeNiveles {
 
                         if (fila.charAt(i) == '1') {
                             JLabel brickAzul = new JLabel(
-                                    new ImageIcon(CargaDeNiveles.class.getResource("\\img\\Brick1.png")));
+                                    new ImageIcon(LevelLoader.class.getResource("\\img\\Brick1.png")));
                             mapa[contador] = brickAzul;
                         }
 
                         if (fila.charAt(i) == '2') {
                             JLabel brickRojo = new JLabel(
-                                    new ImageIcon(CargaDeNiveles.class.getResource("\\img\\Brick2.png")));
+                                    new ImageIcon(LevelLoader.class.getResource("\\img\\Brick2.png")));
                             mapa[contador] = brickRojo;
                         }
 

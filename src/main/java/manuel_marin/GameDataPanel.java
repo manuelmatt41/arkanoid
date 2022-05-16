@@ -35,11 +35,11 @@ import javax.swing.JPanel;
 /**
  * Clase se contiene los datos de la partida.
  */
-public class PanelDatosPartida extends JPanel {
+public class GameDataPanel extends JPanel {
     /**
      * Inicializa las propiedades de los parametros.
      */
-    public PanelDatosPartida() {
+    public GameDataPanel() {
         setLayout(new FlowLayout(FlowLayout.CENTER, 40, 0));
         puntuacion = 0;
         vidas = 3;

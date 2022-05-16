@@ -1,1 +1,1 @@
-Introduccion de script para git
+Claridad de codigo

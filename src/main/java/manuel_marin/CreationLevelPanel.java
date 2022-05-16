@@ -47,8 +47,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
-public class PanelCreacionNiveles extends JPanel {
-    public PanelCreacionNiveles(VentanaPrincipal ventanaPrincipal) {
+public class CreationLevelPanel extends JPanel {
+    public CreationLevelPanel(ArkanoidFrame ventanaPrincipal) {
         setLayout(null);
         this.ventanaPrincipal = ventanaPrincipal;
         iniciarComponentes();
@@ -194,11 +194,11 @@ public class PanelCreacionNiveles extends JPanel {
             }
 
             if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                ventanaPrincipal.panelMenuPrincipal = new PanelMenuPrincipal(ventanaPrincipal);
-                ventanaPrincipal.add(ventanaPrincipal.panelMenuPrincipal, BorderLayout.CENTER);
+                ventanaPrincipal.mainMenuPanel = new MainMenuPanel(ventanaPrincipal);
+                ventanaPrincipal.add(ventanaPrincipal.mainMenuPanel, BorderLayout.CENTER);
 
-                ventanaPrincipal.panelCreacionNiveles.setVisible(false);
-                ventanaPrincipal.remove(ventanaPrincipal.panelCreacionNiveles);
+                ventanaPrincipal.creationLevelPanel.setVisible(false);
+                ventanaPrincipal.remove(ventanaPrincipal.creationLevelPanel);
             }
         }
     }
@@ -209,8 +209,8 @@ public class PanelCreacionNiveles extends JPanel {
     ActionHandler actionHandler = new ActionHandler();
     MouseHandler mouseHandler = new MouseHandler();
     KeyHandler keyHandler = new KeyHandler();
-    URL[] imagenes = { PanelCreacionNiveles.class.getResource("img\\Brick1.png"),
-            PanelCreacionNiveles.class.getResource("img\\Brick2.png") };
+    URL[] imagenes = { CreationLevelPanel.class.getResource("img\\Brick1.png"),
+            CreationLevelPanel.class.getResource("img\\Brick2.png") };
     JLabel[] espaciosVacios;
-    VentanaPrincipal ventanaPrincipal;
+    ArkanoidFrame ventanaPrincipal;
 }

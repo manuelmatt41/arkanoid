@@ -32,16 +32,16 @@ import javax.swing.JFrame;
 /**
  * Clase que hereda de JFrame para gestionar una ventana.
  */
-public class VentanaPrincipal extends JFrame {
+public class ArkanoidFrame extends JFrame {
     /**
      * Inicializa las propiedades de los parametros.
      */
-    public VentanaPrincipal() {
+    public ArkanoidFrame() {
         super("Araknoid");
         setLayout(new BorderLayout());
 
-        panelMenuPrincipal = new PanelMenuPrincipal(this);
-        add(panelMenuPrincipal, BorderLayout.CENTER);
+        mainMenuPanel = new MainMenuPanel(this);
+        add(mainMenuPanel, BorderLayout.CENTER);
 
         setUndecorated(true);
         setVisible(true);
@@ -53,12 +53,12 @@ public class VentanaPrincipal extends JFrame {
     /**
      * Panel donde se encuentra el juego.
      */
-    PanelJuego panelJuego;
+    GamePanel gamePanel;
     /**
      * Panel donde se encuentra los datos de la partida.
      */
-    PanelDatosPartida panelPuntuacion;
-    PanelMenuNiveles panelMenuJuego;
-    PanelCreacionNiveles panelCreacionNiveles;
-    PanelMenuPrincipal panelMenuPrincipal;
+    GameDataPanel gameDataPanel;
+    LevelSelectionPanel levelSelectionPanel;
+    CreationLevelPanel creationLevelPanel;
+    MainMenuPanel mainMenuPanel;
 }

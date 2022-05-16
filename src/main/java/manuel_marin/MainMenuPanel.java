@@ -32,8 +32,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-public class PanelMenuPrincipal extends JPanel {
-    public PanelMenuPrincipal(VentanaPrincipal ventanaPrincipal) {
+public class MainMenuPanel extends JPanel {
+    public MainMenuPanel(ArkanoidFrame ventanaPrincipal) {
         setLayout(null);
         this.ventanaPrincipal = ventanaPrincipal;
 
@@ -54,19 +54,19 @@ public class PanelMenuPrincipal extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == btSeleccionarNivel) {
-                ventanaPrincipal.panelMenuJuego = new PanelMenuNiveles(ventanaPrincipal);
-                ventanaPrincipal.add(ventanaPrincipal.panelMenuJuego, BorderLayout.CENTER);
+                ventanaPrincipal.levelSelectionPanel = new LevelSelectionPanel(ventanaPrincipal);
+                ventanaPrincipal.add(ventanaPrincipal.levelSelectionPanel, BorderLayout.CENTER);
 
-                ventanaPrincipal.panelMenuPrincipal.setVisible(false);
-                ventanaPrincipal.remove(ventanaPrincipal.panelMenuPrincipal);
+                ventanaPrincipal.mainMenuPanel.setVisible(false);
+                ventanaPrincipal.remove(ventanaPrincipal.mainMenuPanel);
             }
 
             if (e.getSource() == btCrearNivel) {
-                ventanaPrincipal.panelCreacionNiveles = new PanelCreacionNiveles(ventanaPrincipal);
-                ventanaPrincipal.add(ventanaPrincipal.panelCreacionNiveles, BorderLayout.CENTER);
+                ventanaPrincipal.creationLevelPanel = new CreationLevelPanel(ventanaPrincipal);
+                ventanaPrincipal.add(ventanaPrincipal.creationLevelPanel, BorderLayout.CENTER);
 
-                ventanaPrincipal.panelMenuPrincipal.setVisible(false);
-                ventanaPrincipal.remove(ventanaPrincipal.panelMenuPrincipal);
+                ventanaPrincipal.mainMenuPanel.setVisible(false);
+                ventanaPrincipal.remove(ventanaPrincipal.mainMenuPanel);
             }
         }
 
@@ -74,6 +74,6 @@ public class PanelMenuPrincipal extends JPanel {
 
     JButton btSeleccionarNivel;
     JButton btCrearNivel;
-    VentanaPrincipal ventanaPrincipal;
+    ArkanoidFrame ventanaPrincipal;
     ActionHandler actionHandler = new ActionHandler();
 }
