@@ -27,7 +27,7 @@
 package manuel_marin;
 
 public class Application {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws InterruptedException {
     new ArkanoidFrame();
   }
 }

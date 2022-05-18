@@ -95,7 +95,8 @@ public class GamePanel extends JPanel {
         }
 
         // Crea la plataforma con sus hitboxs
-        File plataformaArchivoFile = new File(System.getProperty("user.home") + "\\AppData\\Roaming\\arkanoid\\img\\Plataforma.png");
+        File plataformaArchivoFile = new File(
+                System.getProperty("user.home") + "\\AppData\\Roaming\\arkanoid\\img\\Plataforma.png");
         if (plataformaArchivoFile.exists()) {
             plataforma = new JLabel(new ImageIcon(plataformaArchivoFile.getAbsolutePath()));
         } else {
@@ -119,7 +120,8 @@ public class GamePanel extends JPanel {
         }
 
         // Crea la pelota
-        File pelotaArchivoFile = new File(System.getProperty("user.home") + "\\AppData\\Roaming\\arkanoid\\img\\Pelota.png");
+        File pelotaArchivoFile = new File(
+                System.getProperty("user.home") + "\\AppData\\Roaming\\arkanoid\\img\\Pelota.png");
         if (pelotaArchivoFile.exists()) {
             pelota = new JLabel(new ImageIcon(pelotaArchivoFile.getAbsolutePath()));
         } else {
@@ -413,6 +415,7 @@ public class GamePanel extends JPanel {
                             }
                             ventanaPrincipal.gameDataPanel.puntuacion += 100;
                             ventanaPrincipal.gameDataPanel.updateLabels();
+                            soundsEffect.play();
                         }
 
                     }
@@ -619,4 +622,5 @@ public class GamePanel extends JPanel {
     MovimientoPlataforma movimientoPlataforma = new MovimientoPlataforma();
     Timer fpsPlataforma;
     String nivel;
+    SoundsEffect soundsEffect = new SoundsEffect("pop.wav");
 }
