@@ -119,7 +119,12 @@ public class GamePanel extends JPanel {
         }
 
         // Crea la pelota
-        pelota = new JLabel(new ImageIcon(GamePanel.class.getResource("\\img\\Pelota.png")));
+        File pelotaArchivoFile = new File(System.getProperty("user.home") + "\\AppData\\Roaming\\arkanoid\\img\\Pelota.png");
+        if (pelotaArchivoFile.exists()) {
+            pelota = new JLabel(new ImageIcon(pelotaArchivoFile.getAbsolutePath()));
+        } else {
+            pelota = new JLabel(new ImageIcon(GamePanel.class.getResource("img\\Pelota.png")));
+        }
         pelota.setSize(20, 20);
         pelota.setLocation(300, 412);
         add(pelota);

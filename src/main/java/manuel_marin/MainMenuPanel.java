@@ -35,7 +35,7 @@ import javax.swing.JPanel;
 public class MainMenuPanel extends JPanel {
     public MainMenuPanel(ArkanoidFrame ventanaPrincipal) {
         setLayout(null);
-        this.ventanaPrincipal = ventanaPrincipal;
+        this.arkanoidFrame = ventanaPrincipal;
 
         btSeleccionarNivel = new JButton("Selecionar nivel");
         btSeleccionarNivel.setSize(btSeleccionarNivel.getPreferredSize());
@@ -48,25 +48,39 @@ public class MainMenuPanel extends JPanel {
         btCrearNivel.setLocation(150, 0);
         btCrearNivel.addActionListener(actionHandler);
         add(btCrearNivel);
+
+        btPersonalizarSkins = new JButton("Personalizar Skins");
+        btPersonalizarSkins.setSize(btPersonalizarSkins.getPreferredSize());
+        btPersonalizarSkins.setLocation(250, 0);
+        btPersonalizarSkins.addActionListener(actionHandler);
+        add(btPersonalizarSkins);
     }
 
     private class ActionHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == btSeleccionarNivel) {
-                ventanaPrincipal.levelSelectionPanel = new LevelSelectionPanel(ventanaPrincipal);
-                ventanaPrincipal.add(ventanaPrincipal.levelSelectionPanel, BorderLayout.CENTER);
+                arkanoidFrame.levelSelectionPanel = new LevelSelectionPanel(arkanoidFrame);
+                arkanoidFrame.add(arkanoidFrame.levelSelectionPanel, BorderLayout.CENTER);
 
-                ventanaPrincipal.mainMenuPanel.setVisible(false);
-                ventanaPrincipal.remove(ventanaPrincipal.mainMenuPanel);
+                arkanoidFrame.mainMenuPanel.setVisible(false);
+                arkanoidFrame.remove(arkanoidFrame.mainMenuPanel);
             }
 
             if (e.getSource() == btCrearNivel) {
-                ventanaPrincipal.creationLevelPanel = new CreationLevelPanel(ventanaPrincipal);
-                ventanaPrincipal.add(ventanaPrincipal.creationLevelPanel, BorderLayout.CENTER);
+                arkanoidFrame.creationLevelPanel = new CreationLevelPanel(arkanoidFrame);
+                arkanoidFrame.add(arkanoidFrame.creationLevelPanel, BorderLayout.CENTER);
 
-                ventanaPrincipal.mainMenuPanel.setVisible(false);
-                ventanaPrincipal.remove(ventanaPrincipal.mainMenuPanel);
+                arkanoidFrame.mainMenuPanel.setVisible(false);
+                arkanoidFrame.remove(arkanoidFrame.mainMenuPanel);
+            }
+
+            if (e.getSource() == btPersonalizarSkins) {
+                arkanoidFrame.skinPersonalizatonPanel = new SkinPersonalizatonPanel(arkanoidFrame);
+                arkanoidFrame.add(arkanoidFrame.skinPersonalizatonPanel, BorderLayout.CENTER);
+
+                arkanoidFrame.mainMenuPanel.setVisible(false);
+                arkanoidFrame.remove(arkanoidFrame.mainMenuPanel);
             }
         }
 
@@ -74,6 +88,7 @@ public class MainMenuPanel extends JPanel {
 
     JButton btSeleccionarNivel;
     JButton btCrearNivel;
-    ArkanoidFrame ventanaPrincipal;
+    JButton btPersonalizarSkins;
+    ArkanoidFrame arkanoidFrame;
     ActionHandler actionHandler = new ActionHandler();
 }
