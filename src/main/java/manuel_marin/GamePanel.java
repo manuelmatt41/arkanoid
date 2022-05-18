@@ -95,7 +95,12 @@ public class GamePanel extends JPanel {
         }
 
         // Crea la plataforma con sus hitboxs
-        plataforma = new JLabel(new ImageIcon(GamePanel.class.getResource("\\img\\Plataforma.png")));
+        File plataformaArchivoFile = new File(System.getProperty("user.home") + "\\AppData\\Roaming\\arkanoid\\img\\Plataforma.png");
+        if (plataformaArchivoFile.exists()) {
+            plataforma = new JLabel(new ImageIcon(plataformaArchivoFile.getAbsolutePath()));
+        } else {
+            plataforma = new JLabel(new ImageIcon(GamePanel.class.getResource("img\\Plataforma.png")));
+        }
         plataforma.setSize(plataforma.getPreferredSize());
         plataforma.setLocation(250, 430);
         plataforma.addKeyListener(movimientoPlataforma);

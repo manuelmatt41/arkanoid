@@ -40,8 +40,10 @@ public class ArkanoidFrame extends JFrame {
         super("Araknoid");
         setLayout(new BorderLayout());
 
-        mainMenuPanel = new MainMenuPanel(this);
-        add(mainMenuPanel, BorderLayout.CENTER);
+        // mainMenuPanel = new MainMenuPanel(this);
+        // add(mainMenuPanel, BorderLayout.CENTER);
+
+        add(new SkinPersonalizatonPanel());
 
         setUndecorated(true);
         setVisible(true);
