@@ -1,1 +1,1 @@
-Añadido musica y efectos de sonido
+Añadido mas efectos de sonido y mejora UI

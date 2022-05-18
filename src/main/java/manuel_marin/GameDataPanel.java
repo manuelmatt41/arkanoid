@@ -29,8 +29,10 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.EtchedBorder;
 
 /**
  * Clase se contiene los datos de la partida.
@@ -56,6 +58,7 @@ public class GameDataPanel extends JPanel {
 
         setBackground(new Color(147, 176, 171));
         setFocusable(false);
+        setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
     }
 
     /**

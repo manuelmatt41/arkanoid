@@ -45,6 +45,7 @@ public class ArkanoidFrame extends JFrame {
 
         soundsEffect.loop();
 
+
         setUndecorated(true);
         setVisible(true);
         setSize(700, 500);
@@ -64,5 +65,5 @@ public class ArkanoidFrame extends JFrame {
     CreationLevelPanel creationLevelPanel;
     MainMenuPanel mainMenuPanel;
     SkinPersonalizatonPanel skinPersonalizatonPanel;
-    SoundsEffect soundsEffect = new SoundsEffect("musicaFondo.wav");
+    SoundsEffect soundsEffect = new SoundsEffect("background.wav");
 }

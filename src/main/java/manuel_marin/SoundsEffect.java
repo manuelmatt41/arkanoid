@@ -2,6 +2,7 @@ package manuel_marin;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -16,8 +17,10 @@ public class SoundsEffect {
     public SoundsEffect(String archivo) {
         try {
             audioInputStream = AudioSystem.getAudioInputStream(
-                    new File(System.getProperty("user.home") + "\\AppData\\Roaming\\arkanoid\\sound\\" + archivo));
+                    new File(SoundsEffect.class.getResource("sound\\" + archivo).toURI()));
         } catch (UnsupportedAudioFileException | IOException e) {
+            e.printStackTrace();
+        } catch (URISyntaxException e) {
             e.printStackTrace();
         }
 

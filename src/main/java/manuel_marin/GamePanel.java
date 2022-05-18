@@ -25,6 +25,7 @@
  */
 package manuel_marin;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -33,10 +34,12 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import javax.swing.border.EtchedBorder;
 
 /**
  * Clase donde se muestra el juego.
@@ -53,8 +56,8 @@ public class GamePanel extends JPanel {
         this.nivel = nivel;
         iniciarComponentes();
 
-        setBackground(new Color(147, 176, 171));
         setFocusable(true);
+        setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
     }
 
     /**
@@ -213,7 +216,7 @@ public class GamePanel extends JPanel {
             if (i == 0 || i == 3) {
                 hitboxLateral.setSize(90, 5);
             } else {
-                hitboxLateral.setSize(5, 12);
+                hitboxLateral.setSize(5, 22);
             }
             hitboxLateral.setLocation(posicionesLateralesHitBoxs[i]);
             hitboxs[i] = hitboxLateral;
@@ -411,10 +414,10 @@ public class GamePanel extends JPanel {
                             if (romperLadrillo(bricks[i])) {
                                 bricks[i].setVisible(false);
                                 ladrillos--;
-
                             }
                             ventanaPrincipal.gameDataPanel.puntuacion += 100;
                             ventanaPrincipal.gameDataPanel.updateLabels();
+                            soundsEffect = new SoundsEffect("pop.wav");
                             soundsEffect.play();
                         }
 
@@ -423,13 +426,16 @@ public class GamePanel extends JPanel {
             }
 
             if (ladrillos == mapaVacio) {
-
-                ventanaPrincipal.levelSelectionPanel.setVisible(true);
-
+                soundsEffect = new SoundsEffect("win.wav");
+                soundsEffect.play();
+                ventanaPrincipal.mainMenuPanel = new MainMenuPanel(ventanaPrincipal);
+                ventanaPrincipal.add(ventanaPrincipal.mainMenuPanel);
+                
                 ventanaPrincipal.gamePanel.setVisible(false);
                 ventanaPrincipal.gameDataPanel.setVisible(false);
                 ventanaPrincipal.remove(ventanaPrincipal.gameDataPanel);
                 ventanaPrincipal.remove(ventanaPrincipal.gamePanel);
+                fpsPelota.stop();
             }
 
             // Detecta si la plataforma ha tocado la pelota.
@@ -441,7 +447,6 @@ public class GamePanel extends JPanel {
                                 direccionX = false;
                             }
                             direccionY = false;
-                            velocidadJuego = 6;
                         }
 
                         if (j == 1) {
@@ -450,8 +455,8 @@ public class GamePanel extends JPanel {
                             }
                             direccionY = false;
 
-                            velocidadJuego = velocidadAcelerada;
                         }
+                        velocidadJuego = velocidadAcelerada;
                     } else {
                         if (hitBoxPlataformaLateral[0].getBounds().intersects(pelota.getBounds())) {
                             direccionY = false;
@@ -480,8 +485,9 @@ public class GamePanel extends JPanel {
             if (pelota.getLocation().y >= 440) {
                 ventanaPrincipal.gameDataPanel.vidas--;
                 ventanaPrincipal.gameDataPanel.updateLabels();
-
                 if (ventanaPrincipal.gameDataPanel.vidas > 0) {
+                    soundsEffect = new SoundsEffect("derrota.wav");
+                    soundsEffect.play();
                     pelota.setLocation(300, 412);
                     plataforma.setLocation(250, 430);
 
@@ -500,8 +506,15 @@ public class GamePanel extends JPanel {
                     fpsPelota.stop();
                     return;
                 } else {
-                    ventanaPrincipal.dispose();
-                    new ArkanoidFrame();
+                    soundsEffect = new SoundsEffect("derrotafinal.wav");
+                    soundsEffect.play();
+                    ventanaPrincipal.mainMenuPanel = new MainMenuPanel(ventanaPrincipal);
+                    ventanaPrincipal.add(ventanaPrincipal.mainMenuPanel, BorderLayout.CENTER);
+
+                    ventanaPrincipal.gamePanel.setVisible(false);
+                    ventanaPrincipal.gameDataPanel.setVisible(false);
+                    ventanaPrincipal.remove(ventanaPrincipal.gamePanel);
+                    ventanaPrincipal.remove(ventanaPrincipal.gameDataPanel);
                     fpsPelota.stop();
                     return;
                 }
@@ -572,7 +585,7 @@ public class GamePanel extends JPanel {
          */
         boolean direccionY;
         int ladrillos;
-        int velocidadAcelerada = 6;
+        int velocidadAcelerada = 8;
         int mapaVacio = 0;
     }
 
@@ -622,5 +635,5 @@ public class GamePanel extends JPanel {
     MovimientoPlataforma movimientoPlataforma = new MovimientoPlataforma();
     Timer fpsPlataforma;
     String nivel;
-    SoundsEffect soundsEffect = new SoundsEffect("pop.wav");
+    SoundsEffect soundsEffect;
 }
