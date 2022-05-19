@@ -1,1 +1,1 @@
-Diversas mejoras, arreglar fisicas
+Añadido cursor personalizado

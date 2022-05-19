@@ -26,7 +26,11 @@
 package manuel_marin;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
+import java.awt.Point;
+import java.awt.Toolkit;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 /**
@@ -51,6 +55,9 @@ public class ArkanoidFrame extends JFrame {
         setSize(700, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setCursor(Toolkit.getDefaultToolkit().createCustomCursor(
+                new ImageIcon(ArkanoidFrame.class.getResource("resource\\img\\cursor.png")).getImage(),
+                new Point(), "myCursor"));
     }
 
     /**
