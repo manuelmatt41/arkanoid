@@ -25,7 +25,6 @@
  */
 package manuel_marin;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -137,7 +136,7 @@ public class GamePanel extends JPanel {
         movimientosPelota = new MovimientosPelota();
 
         fpsPelota = new Timer(17, movimientosPelota);
-        
+
         addKeyListener(movimientoPlataforma);
         fpsPlataforma = new Timer(17, movimientoPlataforma);
     }
@@ -228,6 +227,19 @@ public class GamePanel extends JPanel {
         }
 
         return hitboxs;
+    }
+
+    public void cerrarPanel() {
+        arkanoidFrame.gameDataPanel.setVisible(false);
+        arkanoidFrame.gamePanel.setVisible(false);
+        arkanoidFrame.getContentPane().removeAll();
+        arkanoidFrame.removeKeyListener(movimientoPlataforma);
+
+        arkanoidFrame.gameDataPanel = null;
+        arkanoidFrame.gamePanel = null;
+        arkanoidFrame.mainMenuPanel = new MainMenuPanel(arkanoidFrame);
+        arkanoidFrame.add(arkanoidFrame.mainMenuPanel);
+        fpsPelota.stop();
     }
 
     /**
@@ -432,14 +444,7 @@ public class GamePanel extends JPanel {
             if (ladrillos == mapaVacio) {
                 soundsEffect = new SoundsEffect("win.wav");
                 soundsEffect.play();
-                arkanoidFrame.mainMenuPanel = new MainMenuPanel(arkanoidFrame);
-                arkanoidFrame.add(arkanoidFrame.mainMenuPanel);
-                
-                arkanoidFrame.gamePanel.setVisible(false);
-                arkanoidFrame.gameDataPanel.setVisible(false);
-                arkanoidFrame.remove(arkanoidFrame.gameDataPanel);
-                arkanoidFrame.remove(arkanoidFrame.gamePanel);
-                fpsPelota.stop();
+                cerrarPanel();
             }
 
             // Detecta si la plataforma ha tocado la pelota.
@@ -512,17 +517,7 @@ public class GamePanel extends JPanel {
                 } else {
                     soundsEffect = new SoundsEffect("derrotafinal.wav");
                     soundsEffect.play();
-                    arkanoidFrame.gamePanel.setVisible(false);
-                    arkanoidFrame.gameDataPanel.setVisible(false);
-                    arkanoidFrame.getContentPane().removeAll();
-                    arkanoidFrame.removeKeyListener(movimientoPlataforma);
-                    
-                    arkanoidFrame.gameDataPanel = null;
-                    arkanoidFrame.gamePanel = null;
-                    arkanoidFrame.mainMenuPanel = new MainMenuPanel(arkanoidFrame);
-                    arkanoidFrame.add(arkanoidFrame.mainMenuPanel, BorderLayout.CENTER);
-                    fpsPelota.stop();
-                    arkanoidFrame.mainMenuPanel.repaint();
+                    cerrarPanel();
                     return;
                 }
             }

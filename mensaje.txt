@@ -1,1 +1,1 @@
-Mejora interfaz y hay que mejorar el acceso a las teclas
+Mejora interfaz del creador de niveles

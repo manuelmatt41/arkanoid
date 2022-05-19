@@ -68,7 +68,9 @@ public class CreationLevelPanel extends JPanel {
             lb.setSize(100, 32);
             lb.setLocation(x, y);
             lb.setOpaque(true);
-            lb.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
+            lb.setBorder(
+                    BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.DARK_GRAY,
+                            Color.darkGray));
             lb.setBackground(new Color(147, 176, 171));
             lb.addMouseListener(mouseHandler);
             lb.addKeyListener(keyHandler);
@@ -86,7 +88,7 @@ public class CreationLevelPanel extends JPanel {
         btBrickAzul = new JButton("Brick azul");
         btBrickAzul.setActionCommand("0");
         btBrickAzul.setSize(btBrickAzul.getPreferredSize());
-        btBrickAzul.setLocation(0, 450);
+        btBrickAzul.setLocation(10, 450);
         btBrickAzul.addActionListener(actionHandler);
         btBrickAzul.addKeyListener(keyHandler);
         add(btBrickAzul);
@@ -94,15 +96,79 @@ public class CreationLevelPanel extends JPanel {
         btBrickRojo = new JButton("Brick Rojo");
         btBrickRojo.setActionCommand("1");
         btBrickRojo.setSize(btBrickRojo.getPreferredSize());
-        btBrickRojo.setLocation(100, 450);
+        btBrickRojo.setLocation(110, 450);
         btBrickRojo.addActionListener(actionHandler);
         btBrickRojo.addKeyListener(keyHandler);
         add(btBrickRojo);
 
-        lbLadrilloSeleccionado = new JLabel();
-        lbLadrilloSeleccionado.setLocation(200, 450);
-        lbLadrilloSeleccionado.addKeyListener(keyHandler);
-        add(lbLadrilloSeleccionado);
+        btBrickGris = new JButton("Brick gris");
+        btBrickGris.setActionCommand("2");
+        btBrickGris.setSize(btBrickGris.getPreferredSize());
+        btBrickGris.setLocation(210, 450);
+        btBrickGris.addActionListener(actionHandler);
+        btBrickGris.addKeyListener(keyHandler);
+        add(btBrickGris);
+
+        btBorrar = new JButton("Borrar");
+        btBorrar.setSize(btBorrar.getPreferredSize());
+        btBorrar.setLocation(310, 450);
+        btBorrar.addActionListener(actionHandler);
+        btBorrar.addKeyListener(keyHandler);
+        add(btBorrar);
+
+        btGuardar = new JButton("Guardar");
+        btGuardar.setSize(btGuardar.getPreferredSize());
+        btGuardar.setLocation(395, 450);
+        btGuardar.addActionListener((e) -> {
+            pedirNombreArchivo();
+        });
+        btGuardar.addKeyListener(keyHandler);
+        add(btGuardar);
+
+        ladrilloSeleccionado = new JLabel();
+        ladrilloSeleccionado.setLocation(500, 450);
+        ladrilloSeleccionado.addKeyListener(keyHandler);
+        add(ladrilloSeleccionado);
+
+        lbInformacion = new JLabel("Brick seleccioando:");
+        lbInformacion.setSize(lbInformacion.getPreferredSize());
+        lbInformacion.setLocation(500, 435);
+        lbInformacion.addKeyListener(keyHandler);
+        add(lbInformacion);
+    }
+
+    public void pedirNombreArchivo() {
+        int casillasPintadas = espaciosVacios.length;
+
+        for (int i = 0; i < espaciosVacios.length; i++) {
+            if (espaciosVacios[i].getIcon() == null) {
+                casillasPintadas--;
+            } else {
+                casillasPintadas++;
+            }
+        }
+
+        if (casillasPintadas > 0) {
+            String nombre = "";
+            while (nombre.length() > 8 || nombre.equals("")) {
+                nombre = JOptionPane.showInputDialog(null, "Introduce un nombre para el nivel");
+                if (nombre != null) {
+                    if (!nombre.equals("")) {
+                        if (nombre.length() <= 8) {
+                            guardarNivel(nombre.trim().toLowerCase());
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Nombre demasiado largo");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "No se ha introducido ningun nombre");
+                    }
+                } else {
+                    return;
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "No se ha puesto ningun brick");
+        }
     }
 
     public void guardarNivel(String nombreArchivo) {
@@ -127,6 +193,10 @@ public class CreationLevelPanel extends JPanel {
                         if (espaciosVacios[i].getIcon().toString().contains("Brick2")) {
                             p.print(2);
                         }
+
+                        if (espaciosVacios[i].getIcon().toString().contains("Brick3")) {
+                            p.print(3);
+                        }
                     } else {
                         p.print(0);
                     }
@@ -146,9 +216,14 @@ public class CreationLevelPanel extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            lbLadrilloSeleccionado.setIcon(new ImageIcon(imagenes[Integer.parseInt(e.getActionCommand())]));
-            lbLadrilloSeleccionado.setSize(lbLadrilloSeleccionado.getPreferredSize());
+            if (e.getSource() == btBrickAzul || e.getSource() == btBrickRojo || e.getSource() == btBrickGris) {
+                ladrilloSeleccionado.setIcon(new ImageIcon(imagenes[Integer.parseInt(e.getActionCommand())]));
+                ladrilloSeleccionado.setSize(ladrilloSeleccionado.getPreferredSize());
+            }
 
+            if (e.getSource() == btBorrar) {
+                ladrilloSeleccionado.setIcon(null);
+            }
         }
 
     }
@@ -158,10 +233,15 @@ public class CreationLevelPanel extends JPanel {
         public void mousePressed(MouseEvent e) {
             for (int i = 0; i < espaciosVacios.length; i++) {
                 if (e.getSource() == espaciosVacios[i]) {
-                    if (lbLadrilloSeleccionado.getIcon() != null) {
-                        espaciosVacios[i].setIcon(lbLadrilloSeleccionado.getIcon());
+                    if (ladrilloSeleccionado.getIcon() != null) {
+                        espaciosVacios[i].setIcon(ladrilloSeleccionado.getIcon());
                         espaciosVacios[i].setBackground(new Color(147, 176, 171));
                         espaciosVacios[i].setBorder(null);
+                    } else {
+                        espaciosVacios[i].setIcon(null);
+                        espaciosVacios[i].setBackground(new Color(147, 176, 171));
+                        espaciosVacios[i].setBorder(
+                                BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
                     }
                 }
             }
@@ -172,10 +252,17 @@ public class CreationLevelPanel extends JPanel {
             if (SwingUtilities.isLeftMouseButton(e)) {
                 for (int i = 0; i < espaciosVacios.length; i++) {
                     if (e.getSource() == espaciosVacios[i]) {
-                        if (lbLadrilloSeleccionado.getIcon() != null) {
-                            espaciosVacios[i].setIcon(lbLadrilloSeleccionado.getIcon());
+                        if (ladrilloSeleccionado.getIcon() != null) {
+                            espaciosVacios[i].setIcon(ladrilloSeleccionado.getIcon());
                             espaciosVacios[i].setBackground(new Color(147, 176, 171));
                             espaciosVacios[i].setBorder(null);
+
+                        } else {
+                            espaciosVacios[i].setIcon(null);
+                            espaciosVacios[i].setBackground(new Color(147, 176, 171));
+                            espaciosVacios[i].setBorder(
+                                    BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.DARK_GRAY,
+                                            Color.darkGray));
                         }
                     }
                 }
@@ -206,41 +293,34 @@ public class CreationLevelPanel extends JPanel {
         @Override
         public void keyPressed(KeyEvent e) {
             if ((e.isControlDown() && e.getKeyCode() == KeyEvent.VK_P)) {
-                String nombre = "";
-                while (nombre.length() > 8 || nombre.equals("")) {
-                    nombre = JOptionPane.showInputDialog(null, "Introduce un nombre para el nivel");
-                    if (nombre != null) {
-                        if (!nombre.equals("")) {
-                            if (nombre.length() <= 8) {
-                                guardarNivel(nombre.trim().toLowerCase());
-                            } else {
-                                JOptionPane.showMessageDialog(null, "Nombre demasiado largo");
-                            }
-                        } else {
-                            JOptionPane.showMessageDialog(null, "No se ha introducido ningun nombre");
-                        }
-                    }
-                }
+                pedirNombreArchivo();
             }
 
             if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                ventanaPrincipal.creationLevelPanel.setVisible(false);
+                ventanaPrincipal.getContentPane().removeAll();
+                ventanaPrincipal.removeKeyListener(keyHandler);
+
+                ventanaPrincipal.creationLevelPanel = null;
                 ventanaPrincipal.mainMenuPanel = new MainMenuPanel(ventanaPrincipal);
                 ventanaPrincipal.add(ventanaPrincipal.mainMenuPanel, BorderLayout.CENTER);
-
-                ventanaPrincipal.creationLevelPanel.setVisible(false);
-                ventanaPrincipal.remove(ventanaPrincipal.creationLevelPanel);
             }
         }
     }
 
     JButton btBrickAzul;
     JButton btBrickRojo;
-    JLabel lbLadrilloSeleccionado;
+    JButton btBrickGris;
+    JButton btBorrar;
+    JButton btGuardar;
+    JLabel ladrilloSeleccionado;
+    JLabel lbInformacion;
     ActionHandler actionHandler = new ActionHandler();
     MouseHandler mouseHandler = new MouseHandler();
     KeyHandler keyHandler = new KeyHandler();
     URL[] imagenes = { CreationLevelPanel.class.getResource("resource\\img\\Brick1.png"),
-            CreationLevelPanel.class.getResource("resource\\img\\Brick2.png") };
+            CreationLevelPanel.class.getResource("resource\\img\\Brick2.png"),
+            CreationLevelPanel.class.getResource("resource\\img\\Brick3.png") };
     JLabel[] espaciosVacios;
     ArkanoidFrame ventanaPrincipal;
 }

@@ -131,6 +131,7 @@ public class MainMenuPanel extends JPanel {
                 arkanoidFrame.mainMenuPanel = null;
 
                 arkanoidFrame.add(arkanoidFrame.levelSelectionPanel, BorderLayout.CENTER);
+                arkanoidFrame.addKeyListener(arkanoidFrame.levelSelectionPanel.keyHandler);
             }
 
             if (e.getSource() == lbCrearNivel || e.getSource() == crearNivel) {
@@ -141,14 +142,18 @@ public class MainMenuPanel extends JPanel {
                 arkanoidFrame.mainMenuPanel = null;
                 
                 arkanoidFrame.add(arkanoidFrame.creationLevelPanel, BorderLayout.CENTER);
+                arkanoidFrame.addKeyListener(arkanoidFrame.creationLevelPanel.keyHandler);
             }
 
             if (e.getSource() == lbPersonalizarSkins || e.getSource() == personalizarSkins) {
-                arkanoidFrame.skinPersonalizatonPanel = new SkinPersonalizatonPanel(arkanoidFrame);
-                arkanoidFrame.add(arkanoidFrame.skinPersonalizatonPanel, BorderLayout.CENTER);
-
                 arkanoidFrame.mainMenuPanel.setVisible(false);
+                arkanoidFrame.getContentPane().removeAll();
+                
+                arkanoidFrame.skinPersonalizatonPanel = new SkinPersonalizatonPanel(arkanoidFrame);
                 arkanoidFrame.mainMenuPanel = null;
+
+                arkanoidFrame.add(arkanoidFrame.skinPersonalizatonPanel, BorderLayout.CENTER);
+                arkanoidFrame.addKeyListener(arkanoidFrame.skinPersonalizatonPanel.keyHandler);
             }
 
             if (e.getSource() == lbMusica) {

@@ -67,6 +67,12 @@ public class LevelLoader {
                             mapa[contador] = brickRojo;
                         }
 
+                        if (fila.charAt(i) == '3') {
+                            JLabel brickGris = new JLabel(
+                                    new ImageIcon(LevelLoader.class.getResource("resource\\img\\Brick3.png")));
+                            mapa[contador] = brickGris;
+                        }
+
                         contador++;
                     }
                 }

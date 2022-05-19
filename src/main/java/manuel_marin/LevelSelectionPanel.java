@@ -103,7 +103,8 @@ public class LevelSelectionPanel extends JPanel {
                     if (niveles.get(i).getName().contains(((JLabel)e.getSource()).getText())) {
                         arkanoidFrame.levelSelectionPanel.setVisible(false);
                         arkanoidFrame.getContentPane().removeAll();
-                        
+                        arkanoidFrame.removeKeyListener(keyHandler);
+
                         arkanoidFrame.gameDataPanel = new GameDataPanel();
                         arkanoidFrame.gamePanel = new GamePanel(arkanoidFrame, niveles.get(i).getAbsolutePath());
                         arkanoidFrame.levelSelectionPanel = null;
@@ -124,11 +125,12 @@ public class LevelSelectionPanel extends JPanel {
         @Override
         public void keyPressed(KeyEvent e) {
             if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                arkanoidFrame.levelSelectionPanel.setVisible(false);
+                arkanoidFrame.getContentPane().removeAll();
+                arkanoidFrame.removeKeyListener(keyHandler);
+                
                 arkanoidFrame.mainMenuPanel = new MainMenuPanel(arkanoidFrame);
                 arkanoidFrame.add(arkanoidFrame.mainMenuPanel, BorderLayout.CENTER);
-
-                arkanoidFrame.levelSelectionPanel.setVisible(false);
-                arkanoidFrame.remove(arkanoidFrame.levelSelectionPanel);
             }
         }
     }
