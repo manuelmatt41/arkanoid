@@ -45,7 +45,7 @@ public class ArkanoidFrame extends JFrame {
 
         soundsEffect.loop();
 
-
+        setFocusable(true);
         setUndecorated(true);
         setVisible(true);
         setSize(700, 500);

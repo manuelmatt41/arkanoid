@@ -61,6 +61,8 @@ public class SkinPersonalizatonPanel extends JPanel {
         this.arkanoidFrame = arkanoidFrame;
         iniciarComponentes();
         addKeyListener(keyHandler);
+        setBackground(new Color(147, 176, 171));
+        setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
     }
 
     public void platformPaint() {
@@ -152,6 +154,13 @@ public class SkinPersonalizatonPanel extends JPanel {
         seleccionColor.setLocation(350, 20);
         seleccionColor.addActionListener((e) -> {
             pincel = JColorChooser.showDialog(this, "Seleccione un color", Color.black);
+            if (pincel != null) {
+                if (pincel.getRGB() == transparencia) {
+                    pincel = new Color(transparencia + 1);
+                }
+            } else {
+                pincel = new Color(transparencia + 1);
+            }
         });
         seleccionColor.addKeyListener(keyHandler);
         add(seleccionColor);

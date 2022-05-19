@@ -1,1 +1,1 @@
-Añadido mas efectos de sonido y mejora UI
+Mejora interfaz y hay que mejorar el acceso a las teclas

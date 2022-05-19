@@ -45,6 +45,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 
 public class CreationLevelPanel extends JPanel {
@@ -52,6 +53,11 @@ public class CreationLevelPanel extends JPanel {
         setLayout(null);
         this.ventanaPrincipal = ventanaPrincipal;
         iniciarComponentes();
+
+        addKeyListener(keyHandler);
+        setFocusable(true);
+        setBackground(new Color(147, 176, 171));
+        setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
     }
 
     private void iniciarComponentes() {
@@ -63,6 +69,7 @@ public class CreationLevelPanel extends JPanel {
             lb.setLocation(x, y);
             lb.setOpaque(true);
             lb.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
+            lb.setBackground(new Color(147, 176, 171));
             lb.addMouseListener(mouseHandler);
             lb.addKeyListener(keyHandler);
             add(lb);
@@ -99,7 +106,9 @@ public class CreationLevelPanel extends JPanel {
     }
 
     public void guardarNivel(String nombreArchivo) {
-        File file = new File("src\\main\\java\\manuel_marin\\niveles\\" + nombreArchivo + ".txt");
+        File file = new File(
+                System.getProperty("user.home") + "\\AppData\\Roaming\\arkanoid\\niveles\\" + nombreArchivo + ".txt");
+        file.canExecute();
         int res = JOptionPane.YES_OPTION;
 
         if (file.exists()) {
@@ -114,14 +123,14 @@ public class CreationLevelPanel extends JPanel {
                         if (espaciosVacios[i].getIcon().toString().contains("Brick1")) {
                             p.print(1);
                         }
-    
+
                         if (espaciosVacios[i].getIcon().toString().contains("Brick2")) {
                             p.print(2);
                         }
                     } else {
                         p.print(0);
                     }
-    
+
                     if ((i + 1) % 7 == 0) {
                         p.println();
                     }
@@ -146,12 +155,12 @@ public class CreationLevelPanel extends JPanel {
 
     private class MouseHandler extends MouseAdapter {
         @Override
-        public void mouseClicked(MouseEvent e) {
+        public void mousePressed(MouseEvent e) {
             for (int i = 0; i < espaciosVacios.length; i++) {
                 if (e.getSource() == espaciosVacios[i]) {
                     if (lbLadrilloSeleccionado.getIcon() != null) {
                         espaciosVacios[i].setIcon(lbLadrilloSeleccionado.getIcon());
-                        espaciosVacios[i].setBackground(Color.white);
+                        espaciosVacios[i].setBackground(new Color(147, 176, 171));
                         espaciosVacios[i].setBorder(null);
                     }
                 }
@@ -160,6 +169,17 @@ public class CreationLevelPanel extends JPanel {
 
         @Override
         public void mouseEntered(MouseEvent e) {
+            if (SwingUtilities.isLeftMouseButton(e)) {
+                for (int i = 0; i < espaciosVacios.length; i++) {
+                    if (e.getSource() == espaciosVacios[i]) {
+                        if (lbLadrilloSeleccionado.getIcon() != null) {
+                            espaciosVacios[i].setIcon(lbLadrilloSeleccionado.getIcon());
+                            espaciosVacios[i].setBackground(new Color(147, 176, 171));
+                            espaciosVacios[i].setBorder(null);
+                        }
+                    }
+                }
+            }
             for (int i = 0; i < espaciosVacios.length; i++) {
                 if (e.getSource() == espaciosVacios[i]) {
                     if (espaciosVacios[i].getIcon() == null) {
@@ -167,6 +187,7 @@ public class CreationLevelPanel extends JPanel {
                     }
                 }
             }
+
         }
 
         @Override
@@ -174,7 +195,7 @@ public class CreationLevelPanel extends JPanel {
             for (int i = 0; i < espaciosVacios.length; i++) {
                 if (e.getSource() == espaciosVacios[i]) {
                     if (espaciosVacios[i].getIcon() == null) {
-                        espaciosVacios[i].setBackground(Color.white);
+                        espaciosVacios[i].setBackground(new Color(147, 176, 171));
                     }
                 }
             }
@@ -185,10 +206,19 @@ public class CreationLevelPanel extends JPanel {
         @Override
         public void keyPressed(KeyEvent e) {
             if ((e.isControlDown() && e.getKeyCode() == KeyEvent.VK_P)) {
-                String nombre = JOptionPane.showInputDialog(null, "Introduce un nombre para el nivel");
-                if (nombre != null) {
-                    if (!nombre.equals("")) {
-                        guardarNivel(nombre);
+                String nombre = "";
+                while (nombre.length() > 8 || nombre.equals("")) {
+                    nombre = JOptionPane.showInputDialog(null, "Introduce un nombre para el nivel");
+                    if (nombre != null) {
+                        if (!nombre.equals("")) {
+                            if (nombre.length() <= 8) {
+                                guardarNivel(nombre.trim().toLowerCase());
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Nombre demasiado largo");
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "No se ha introducido ningun nombre");
+                        }
                     }
                 }
             }
@@ -209,8 +239,8 @@ public class CreationLevelPanel extends JPanel {
     ActionHandler actionHandler = new ActionHandler();
     MouseHandler mouseHandler = new MouseHandler();
     KeyHandler keyHandler = new KeyHandler();
-    URL[] imagenes = { CreationLevelPanel.class.getResource("img\\Brick1.png"),
-            CreationLevelPanel.class.getResource("img\\Brick2.png") };
+    URL[] imagenes = { CreationLevelPanel.class.getResource("resource\\img\\Brick1.png"),
+            CreationLevelPanel.class.getResource("resource\\img\\Brick2.png") };
     JLabel[] espaciosVacios;
     ArkanoidFrame ventanaPrincipal;
 }

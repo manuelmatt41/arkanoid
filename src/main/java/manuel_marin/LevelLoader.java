@@ -57,13 +57,13 @@ public class LevelLoader {
 
                         if (fila.charAt(i) == '1') {
                             JLabel brickAzul = new JLabel(
-                                    new ImageIcon(LevelLoader.class.getResource("\\img\\Brick1.png")));
+                                    new ImageIcon(LevelLoader.class.getResource("resource\\img\\Brick1.png")));
                             mapa[contador] = brickAzul;
                         }
 
                         if (fila.charAt(i) == '2') {
                             JLabel brickRojo = new JLabel(
-                                    new ImageIcon(LevelLoader.class.getResource("\\img\\Brick2.png")));
+                                    new ImageIcon(LevelLoader.class.getResource("resource\\img\\Brick2.png")));
                             mapa[contador] = brickRojo;
                         }
 

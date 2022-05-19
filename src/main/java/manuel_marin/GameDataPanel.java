@@ -57,8 +57,8 @@ public class GameDataPanel extends JPanel {
         add(lblVidas);
 
         setBackground(new Color(147, 176, 171));
-        setFocusable(false);
         setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
+        setFocusable(false);
     }
 
     /**

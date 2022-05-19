@@ -48,16 +48,15 @@ public class GamePanel extends JPanel {
     /**
      * inicializa las propiedades de los parametros.
      * 
-     * @param ventanaPrincipal El JFrame donde se carga la clase.
+     * @param arkanoidFrame El JFrame donde se carga la clase.
      */
-    public GamePanel(ArkanoidFrame ventanaPrincipal, String nivel) {
+    public GamePanel(ArkanoidFrame arkanoidFrame, String nivel) {
         setLayout(null);
-        this.ventanaPrincipal = ventanaPrincipal;
+        this.arkanoidFrame = arkanoidFrame;
         this.nivel = nivel;
         iniciarComponentes();
-
-        setFocusable(true);
         setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
+        setBackground(new Color(147, 176, 171));
     }
 
     /**
@@ -78,7 +77,6 @@ public class GamePanel extends JPanel {
                 hitBoxBricksEsquinas[i] = getPosicionesHitBoxEsquinas(bricks[i]);
                 hitBoxBricksLaterales[i] = getPosicionesHitBoxLaterales(bricks[i], hitBoxBricksEsquinas[i]);
                 add(bricks[i]);
-                bricks[i] = bricks[i];
 
                 for (int j = 0; j < hitBoxBricksEsquinas[i].length; j++) {
                     add(hitBoxBricksEsquinas[i][j]);
@@ -132,14 +130,15 @@ public class GamePanel extends JPanel {
         }
         pelota.setSize(20, 20);
         pelota.setLocation(300, 412);
+        pelota.addKeyListener(movimientoPlataforma);
         add(pelota);
 
         // Crea un timer que se encarga de los movimientos
         movimientosPelota = new MovimientosPelota();
 
         fpsPelota = new Timer(17, movimientosPelota);
+        
         addKeyListener(movimientoPlataforma);
-
         fpsPlataforma = new Timer(17, movimientoPlataforma);
     }
 
@@ -173,6 +172,9 @@ public class GamePanel extends JPanel {
             JLabel hitbox = new JLabel();
             hitbox.setSize(5, 5);
             hitbox.setLocation(posicionesHitBoxs[i]);
+            hitbox.setOpaque(true);
+            hitbox.setBackground(Color.green);
+            hitbox.addKeyListener(movimientoPlataforma);
             hitboxs[i] = hitbox;
         }
 
@@ -218,7 +220,10 @@ public class GamePanel extends JPanel {
             } else {
                 hitboxLateral.setSize(5, 22);
             }
+            hitboxLateral.setOpaque(true);
+            hitboxLateral.setBackground(Color.pink);
             hitboxLateral.setLocation(posicionesLateralesHitBoxs[i]);
+            hitboxLateral.addKeyListener(movimientoPlataforma);
             hitboxs[i] = hitboxLateral;
         }
 
@@ -237,7 +242,6 @@ public class GamePanel extends JPanel {
          */
         @Override
         public void keyPressed(KeyEvent e) {
-
             if (e.getKeyCode() == KeyEvent.VK_LEFT) {
                 direccion = false;
                 fpsPlataforma.start();
@@ -415,8 +419,8 @@ public class GamePanel extends JPanel {
                                 bricks[i].setVisible(false);
                                 ladrillos--;
                             }
-                            ventanaPrincipal.gameDataPanel.puntuacion += 100;
-                            ventanaPrincipal.gameDataPanel.updateLabels();
+                            arkanoidFrame.gameDataPanel.puntuacion += 100;
+                            arkanoidFrame.gameDataPanel.updateLabels();
                             soundsEffect = new SoundsEffect("pop.wav");
                             soundsEffect.play();
                         }
@@ -428,13 +432,13 @@ public class GamePanel extends JPanel {
             if (ladrillos == mapaVacio) {
                 soundsEffect = new SoundsEffect("win.wav");
                 soundsEffect.play();
-                ventanaPrincipal.mainMenuPanel = new MainMenuPanel(ventanaPrincipal);
-                ventanaPrincipal.add(ventanaPrincipal.mainMenuPanel);
+                arkanoidFrame.mainMenuPanel = new MainMenuPanel(arkanoidFrame);
+                arkanoidFrame.add(arkanoidFrame.mainMenuPanel);
                 
-                ventanaPrincipal.gamePanel.setVisible(false);
-                ventanaPrincipal.gameDataPanel.setVisible(false);
-                ventanaPrincipal.remove(ventanaPrincipal.gameDataPanel);
-                ventanaPrincipal.remove(ventanaPrincipal.gamePanel);
+                arkanoidFrame.gamePanel.setVisible(false);
+                arkanoidFrame.gameDataPanel.setVisible(false);
+                arkanoidFrame.remove(arkanoidFrame.gameDataPanel);
+                arkanoidFrame.remove(arkanoidFrame.gamePanel);
                 fpsPelota.stop();
             }
 
@@ -483,9 +487,9 @@ public class GamePanel extends JPanel {
             // Si cae para reiniciar la partida hasta que se quede sin vidas y se vuelve a
             // empezar.
             if (pelota.getLocation().y >= 440) {
-                ventanaPrincipal.gameDataPanel.vidas--;
-                ventanaPrincipal.gameDataPanel.updateLabels();
-                if (ventanaPrincipal.gameDataPanel.vidas > 0) {
+                arkanoidFrame.gameDataPanel.vidas--;
+                arkanoidFrame.gameDataPanel.updateLabels();
+                if (arkanoidFrame.gameDataPanel.vidas > 0) {
                     soundsEffect = new SoundsEffect("derrota.wav");
                     soundsEffect.play();
                     pelota.setLocation(300, 412);
@@ -508,14 +512,17 @@ public class GamePanel extends JPanel {
                 } else {
                     soundsEffect = new SoundsEffect("derrotafinal.wav");
                     soundsEffect.play();
-                    ventanaPrincipal.mainMenuPanel = new MainMenuPanel(ventanaPrincipal);
-                    ventanaPrincipal.add(ventanaPrincipal.mainMenuPanel, BorderLayout.CENTER);
-
-                    ventanaPrincipal.gamePanel.setVisible(false);
-                    ventanaPrincipal.gameDataPanel.setVisible(false);
-                    ventanaPrincipal.remove(ventanaPrincipal.gamePanel);
-                    ventanaPrincipal.remove(ventanaPrincipal.gameDataPanel);
+                    arkanoidFrame.gamePanel.setVisible(false);
+                    arkanoidFrame.gameDataPanel.setVisible(false);
+                    arkanoidFrame.getContentPane().removeAll();
+                    arkanoidFrame.removeKeyListener(movimientoPlataforma);
+                    
+                    arkanoidFrame.gameDataPanel = null;
+                    arkanoidFrame.gamePanel = null;
+                    arkanoidFrame.mainMenuPanel = new MainMenuPanel(arkanoidFrame);
+                    arkanoidFrame.add(arkanoidFrame.mainMenuPanel, BorderLayout.CENTER);
                     fpsPelota.stop();
+                    arkanoidFrame.mainMenuPanel.repaint();
                     return;
                 }
             }
@@ -556,7 +563,7 @@ public class GamePanel extends JPanel {
          */
         private boolean romperLadrillo(JLabel brick) {
             if (brick.getIcon().toString().contains("Brick2.png")) {
-                brick.setIcon(new ImageIcon(GamePanel.class.getResource("\\img\\Brick1.png")));
+                brick.setIcon(new ImageIcon(GamePanel.class.getResource("resource\\img\\Brick1.png")));
                 return false;
             } else {
                 return true;
@@ -585,7 +592,7 @@ public class GamePanel extends JPanel {
          */
         boolean direccionY;
         int ladrillos;
-        int velocidadAcelerada = 8;
+        int velocidadAcelerada = 6;
         int mapaVacio = 0;
     }
 
@@ -620,7 +627,7 @@ public class GamePanel extends JPanel {
     /**
      * Valor del JFrame donde esta el juego.
      */
-    ArkanoidFrame ventanaPrincipal;
+    ArkanoidFrame arkanoidFrame;
     /**
      * Clase encargada del movimiento de la pelota
      */
