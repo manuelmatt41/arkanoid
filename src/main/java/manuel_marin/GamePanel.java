@@ -132,13 +132,15 @@ public class GamePanel extends JPanel {
         pelota.addKeyListener(movimientoPlataforma);
         add(pelota);
 
-        // Crea un timer que se encarga de los movimientos
-        movimientosPelota = new MovimientosPelota();
+        actualizarParametros();
 
+        // Crea un timer que se encarga de los movimientos
         fpsPelota = new Timer(17, movimientosPelota);
+        fpsPlataforma = new Timer(17, movimientoPlataforma);
+        brickHitsProve = new Timer(17, bricksHitsProve);
+        plataformaHitProve = new Timer(17, plataformaHitsProve);
 
         addKeyListener(movimientoPlataforma);
-        fpsPlataforma = new Timer(17, movimientoPlataforma);
     }
 
     /**
@@ -171,8 +173,6 @@ public class GamePanel extends JPanel {
             JLabel hitbox = new JLabel();
             hitbox.setSize(5, 5);
             hitbox.setLocation(posicionesHitBoxs[i]);
-            hitbox.setOpaque(true);
-            hitbox.setBackground(Color.green);
             hitbox.addKeyListener(movimientoPlataforma);
             hitboxs[i] = hitbox;
         }
@@ -196,31 +196,24 @@ public class GamePanel extends JPanel {
         JLabel[] hitboxs = new JLabel[4];
         Point[] posicionesLateralesHitBoxs = new Point[4];
 
-        posicionesLateralesHitBoxs[0] = new Point(
-                hitBoxEsquinas[0].getLocation().x + hitBoxEsquinas[0].getBounds().width,
-                hitBoxEsquinas[0].getLocation().y);
+        posicionesLateralesHitBoxs[0] = new Point(brick.getLocation());
 
-        posicionesLateralesHitBoxs[1] = new Point(
-                hitBoxEsquinas[0].getLocation().x,
-                hitBoxEsquinas[0].getLocation().y + hitBoxEsquinas[0].getBounds().height);
+        posicionesLateralesHitBoxs[1] = new Point(brick.getLocation());
 
         posicionesLateralesHitBoxs[2] = new Point(
-                hitBoxEsquinas[1].getLocation().x,
-                hitBoxEsquinas[1].getLocation().y + hitBoxEsquinas[1].getBounds().height);
+                brick.getLocation().x + brick.getBounds().width - (brick.getBounds().width / 20),
+                brick.getLocation().y);
 
-        posicionesLateralesHitBoxs[3] = new Point(
-                hitBoxEsquinas[2].getLocation().x + hitBoxEsquinas[2].getBounds().width,
-                hitBoxEsquinas[2].getLocation().y);
+        posicionesLateralesHitBoxs[3] = new Point(brick.getLocation().x,
+                brick.getLocation().y + brick.getBounds().height - (brick.getBounds().height / 6));
 
         for (int i = 0; i < hitboxs.length; i++) {
             JLabel hitboxLateral = new JLabel();
             if (i == 0 || i == 3) {
-                hitboxLateral.setSize(90, 5);
+                hitboxLateral.setSize(100, 5);
             } else {
-                hitboxLateral.setSize(5, 22);
+                hitboxLateral.setSize(5, 32);
             }
-            hitboxLateral.setOpaque(true);
-            hitboxLateral.setBackground(Color.pink);
             hitboxLateral.setLocation(posicionesLateralesHitBoxs[i]);
             hitboxLateral.addKeyListener(movimientoPlataforma);
             hitboxs[i] = hitboxLateral;
@@ -240,6 +233,24 @@ public class GamePanel extends JPanel {
         arkanoidFrame.mainMenuPanel = new MainMenuPanel(arkanoidFrame);
         arkanoidFrame.add(arkanoidFrame.mainMenuPanel);
         fpsPelota.stop();
+    }
+
+    /**
+     * Vuelve los parametros a los datos por defecto al empezar otra ronda.
+     */
+    public void actualizarParametros() {
+        velocidadJuego = VELOCIDAD_NORMAL;
+        posicionX = pelota.getLocation().x;
+        posicionY = pelota.getLocation().y;
+        direccionX = false;
+        direccionY = true;
+        ladrillos = 0;
+
+        for (int i = 0; i < bricks.length; i++) {
+            if (bricks[i] != null || !bricks[i].getIcon().toString().contains("Brick3")) {
+                ladrillos++;
+            }
+        }
     }
 
     /**
@@ -267,6 +278,8 @@ public class GamePanel extends JPanel {
             if (e.getKeyCode() == KeyEvent.VK_UP) {
                 if (!fpsPelota.isRunning()) {
                     fpsPelota.start();
+                    brickHitsProve.start();
+                    plataformaHitProve.start();
                 }
             }
         }
@@ -310,32 +323,8 @@ public class GamePanel extends JPanel {
         boolean direccion;
     }
 
-    /**
-     * Clase encargada de actulizar las fisicas.
-     */
-    private class MovimientosPelota implements ActionListener {
-        /**
-         * Inicializa las propiedades de los parametros.
-         */
-        public MovimientosPelota() {
-            velocidadJuego = velocidadNormal;
-            posicionX = pelota.getLocation().x;
-            posicionY = pelota.getLocation().y;
-            direccionX = false;
-            direccionY = true;
-            ladrillos = 0;
+    private class BricksHitsProve implements ActionListener {
 
-            for (int i = 0; i < bricks.length; i++) {
-                if (bricks[i] != null) {
-                    ladrillos++;
-                }
-            }
-        }
-
-        /**
-         * Calcula las fisicas de la pelota y su respuesta a la plataforma y los
-         * ladrillos que toca.
-         */
         @Override
         public void actionPerformed(ActionEvent e) {
             // Detecta que ladrillo ha sido tocado.
@@ -347,84 +336,90 @@ public class GamePanel extends JPanel {
                             for (int j = 0; j < hitBoxBricksEsquinas[i].length; j++) {
                                 if (hitBoxBricksEsquinas[i][j].isVisible()) {
                                     if (hitBoxBricksEsquinas[i][j].getBounds().intersects(pelota.getBounds())) {
-                                        if (j == 0) {
-                                            if (direccionX) {
-                                                direccionX = false;
+                                        if (!bricks[i].getIcon().toString().contains("Brick3")) {
+                                            if (j == 0) {
+                                                if (direccionX) {
+                                                    direccionX = false;
+                                                    posicionX -= 4;
+                                                }
+
+                                                if (direccionY) {
+                                                    direccionY = false;
+                                                    posicionY -= 4;
+                                                }
                                             }
 
-                                            if (direccionY) {
-                                                direccionY = false;
+                                            if (j == 1) {
+                                                if (!direccionX) {
+                                                    direccionX = true;
+                                                    posicionX += 4;
+                                                }
+
+                                                if (direccionY) {
+                                                    direccionY = false;
+                                                    posicionY -= 4;
+                                                }
+                                            }
+
+                                            if (j == 2) {
+                                                if (direccionX) {
+                                                    direccionX = false;
+                                                    posicionX -= 4;
+                                                }
+
+                                                if (!direccionY) {
+                                                    direccionY = true;
+                                                    posicionY += 4;
+                                                }
+                                            }
+
+                                            if (j == 3) {
+                                                if (!direccionX) {
+                                                    direccionX = true;
+                                                    posicionX += 4;
+                                                }
+
+                                                if (direccionY) {
+                                                    direccionY = true;
+                                                    posicionY += 4;
+                                                }
+                                            }
+
+                                            velocidadJuego = VELOCIDAD_ACELERADA;
+                                            if (bricks[i].getIcon().toString().contains("Brick1")) {
+                                                for (int k = 0; k < hitBoxBricksEsquinas[i].length; k++) {
+                                                    hitBoxBricksEsquinas[i][k].setVisible(false);
+                                                    hitBoxBricksLaterales[i][k].setVisible(false);
+                                                }
                                             }
                                         }
 
-                                        if (j == 1) {
-                                            if (!direccionX) {
-                                                direccionX = true;
-                                            }
-
-                                            if (direccionY) {
-                                                direccionY = false;
-                                            }
-                                        }
-
-                                        if (j == 2) {
-                                            if (direccionX) {
-                                                direccionX = false;
-                                            }
-
-                                            if (!direccionY) {
-                                                direccionY = true;
-                                            }
-                                        }
-
-                                        if (j == 3) {
-                                            if (!direccionX) {
-                                                direccionX = true;
-                                            }
-
-                                            if (!direccionY) {
-                                                direccionY = true;
-                                            }
-                                        }
-
-                                        velocidadJuego = velocidadAcelerada;
-                                        if (bricks[i].getIcon().toString().contains("Brick1")) {
-                                            for (int k = 0; k < hitBoxBricksEsquinas[i].length; k++) {
-                                                hitBoxBricksEsquinas[i][k].setVisible(false);
-                                                hitBoxBricksLaterales[i][k].setVisible(false);
-                                            }
-                                        }
-                                    } else {
                                         if (hitBoxBricksLaterales[i][j].isVisible()) {
                                             if (hitBoxBricksLaterales[i][j].getBounds()
                                                     .intersects(pelota.getBounds())) {
                                                 if (j == 0) {
                                                     direccionY = false;
+                                                    posicionX -= 4;
                                                 }
 
                                                 if (j == 1) {
                                                     direccionX = false;
+                                                    posicionX -= 4;
                                                 }
 
                                                 if (j == 2) {
                                                     direccionX = true;
+                                                    posicionX += 4;
                                                 }
 
                                                 if (j == 3) {
                                                     direccionY = true;
+                                                    posicionX += 4;
                                                 }
 
-                                                velocidadJuego = velocidadNormal;
-                                                if (bricks[i].getIcon().toString().contains("Brick1")) {
-                                                    for (int k = 0; k < hitBoxBricksEsquinas[i].length; k++) {
-                                                        hitBoxBricksEsquinas[i][k].setVisible(false);
-                                                        hitBoxBricksLaterales[i][k].setVisible(false);
-                                                    }
-                                                }
                                             }
                                         }
-
-                                    }
+                                    } 
                                 }
                             }
                             if (romperLadrillo(bricks[i])) {
@@ -435,18 +430,45 @@ public class GamePanel extends JPanel {
                             arkanoidFrame.gameDataPanel.updateLabels();
                             soundsEffect = new SoundsEffect("pop.wav");
                             soundsEffect.play();
+                            return;
                         }
 
                     }
                 }
             }
 
-            if (ladrillos == mapaVacio) {
+            if (ladrillos == MAPA_VACIO) {
                 soundsEffect = new SoundsEffect("win.wav");
                 soundsEffect.play();
                 cerrarPanel();
             }
+        }
 
+        /**
+         * Comprueba que si rompe un ladrillo no tenga mas capas, devuelve true si es la
+         * ultima capa y false si hay mas.
+         * 
+         * @param brick Ladrillo que se comprueba que tiene mas capas.
+         * @return Devuelve truee si no hay mas capas y false si hay mas.
+         */
+        private boolean romperLadrillo(JLabel brick) {
+            if (brick.getIcon().toString().contains("Brick3.png")) {
+                return false;
+            }
+            if (brick.getIcon().toString().contains("Brick2.png")) {
+                brick.setIcon(new ImageIcon(GamePanel.class.getResource("resource\\img\\Brick1.png")));
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+    }
+
+    private class PlataformaHitsProve implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
             // Detecta si la plataforma ha tocado la pelota.
             if (plataforma.getBounds().intersects(pelota.getBounds())) {
                 for (int j = 0; j < 2; j++) {
@@ -454,6 +476,7 @@ public class GamePanel extends JPanel {
                         if (j == 0) {
                             if (direccionX) {
                                 direccionX = false;
+                                posicionX -= 2;
                             }
                             direccionY = false;
                         }
@@ -461,21 +484,40 @@ public class GamePanel extends JPanel {
                         if (j == 1) {
                             if (!direccionX) {
                                 direccionX = true;
+                                posicionX += 2;
                             }
                             direccionY = false;
 
                         }
-                        velocidadJuego = velocidadAcelerada;
+                        velocidadJuego = VELOCIDAD_ACELERADA;
                     } else {
                         if (hitBoxPlataformaLateral[0].getBounds().intersects(pelota.getBounds())) {
+                            if (direccionX) {
+                                posicionX += 2;
+                            } else {
+                                posicionX -= 2;
+                            }
                             direccionY = false;
-                            velocidadJuego = velocidadNormal;
+                            velocidadJuego = VELOCIDAD_NORMAL;
                         }
                     }
                 }
 
             }
+        }
 
+    }
+
+    /**
+     * Clase encargada de actulizar las fisicas.
+     */
+    private class MovimientosPelota implements ActionListener {
+        /**
+         * Calcula las fisicas de la pelota y su respuesta a la plataforma y los
+         * ladrillos que toca.
+         */
+        @Override
+        public void actionPerformed(ActionEvent e) {
             // Detecta los bordes del panel
             if (pelota.getLocation().x <= 0) {
                 direccionX = true;
@@ -539,56 +581,6 @@ public class GamePanel extends JPanel {
             pelota.setLocation(posicionX, posicionY);
         }
 
-        /**
-         * Vuelve los parametros a los datos por defecto al empezar otra ronda.
-         */
-        private void actualizarParametros() {
-            posicionX = pelota.getLocation().x;
-            posicionY = pelota.getLocation().y;
-            direccionX = false;
-            direccionY = true;
-        }
-
-        /**
-         * Comprueba que si rompe un ladrillo no tenga mas capas, devuelve true si es la
-         * ultima capa y false si hay mas.
-         * 
-         * @param brick Ladrillo que se comprueba que tiene mas capas.
-         * @return Devuelve truee si no hay mas capas y false si hay mas.
-         */
-        private boolean romperLadrillo(JLabel brick) {
-            if (brick.getIcon().toString().contains("Brick2.png")) {
-                brick.setIcon(new ImageIcon(GamePanel.class.getResource("resource\\img\\Brick1.png")));
-                return false;
-            } else {
-                return true;
-            }
-        }
-
-        /**
-         * Valor de la velocidad.
-         */
-        int velocidadJuego;
-        int velocidadNormal = 4;
-        /**
-         * Valor de la posicion x de la pelota.
-         */
-        int posicionX;
-        /**
-         * Valor de la posicion y de la pelota.
-         */
-        int posicionY;
-        /**
-         * Valor de la direccion que lleva la pelota true positivo y false neativo.
-         */
-        boolean direccionX;
-        /**
-         * Valor de la direccion que lleva la pelota true positivo y false neativo.
-         */
-        boolean direccionY;
-        int ladrillos;
-        int velocidadAcelerada = 6;
-        int mapaVacio = 0;
     }
 
     /**
@@ -626,7 +618,7 @@ public class GamePanel extends JPanel {
     /**
      * Clase encargada del movimiento de la pelota
      */
-    MovimientosPelota movimientosPelota;
+    MovimientosPelota movimientosPelota = new MovimientosPelota();
     /**
      * Clase encargada de iniciar el movimiento de la pelota cada cierto timpo.
      */
@@ -634,8 +626,36 @@ public class GamePanel extends JPanel {
     /**
      * Clas encargada del movimiento de la plataforma.
      */
-    MovimientoPlataforma movimientoPlataforma = new MovimientoPlataforma();
+    Timer brickHitsProve;
+    Timer plataformaHitProve;
     Timer fpsPlataforma;
+    MovimientoPlataforma movimientoPlataforma = new MovimientoPlataforma();
+    BricksHitsProve bricksHitsProve = new BricksHitsProve();
+    PlataformaHitsProve plataformaHitsProve = new PlataformaHitsProve();
     String nivel;
     SoundsEffect soundsEffect;
+    /**
+     * Valor de la velocidad.
+     */
+    int velocidadJuego;
+    /**
+     * Valor de la posicion x de la pelota.
+     */
+    int posicionX;
+    /**
+     * Valor de la posicion y de la pelota.
+     */
+    int posicionY;
+    /**
+     * Valor de la direccion que lleva la pelota true positivo y false neativo.
+     */
+    boolean direccionX;
+    /**
+     * Valor de la direccion que lleva la pelota true positivo y false neativo.
+     */
+    boolean direccionY;
+    int ladrillos;
+    final int VELOCIDAD_NORMAL = 4;
+    final int VELOCIDAD_ACELERADA = 6;
+    final int MAPA_VACIO = 0;
 }

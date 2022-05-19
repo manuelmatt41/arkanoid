@@ -1,1 +1,1 @@
-Mejora interfaz del creador de niveles
+Diversas mejoras, arreglar fisicas
