@@ -26,7 +26,7 @@
 package manuel_marin;
 
 import java.awt.BorderLayout;
-import java.awt.Cursor;
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.Toolkit;
 
@@ -34,43 +34,41 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 /**
- * Clase que hereda de JFrame para gestionar una ventana.
+ * Clase que hereda de JFrame para gestionar la ventana del juego.
  */
 public class ArkanoidFrame extends JFrame {
     /**
-     * Inicializa las propiedades de los parametros.
+     * Inicializa las propiedades de los parametros, las caracteristicas de la ventana y la musica de fondo.
      */
     public ArkanoidFrame() {
         super("Araknoid");
         setLayout(new BorderLayout());
 
+        //Contenido de la ventana
         mainMenuPanel = new MainMenuPanel(this);
         add(mainMenuPanel, BorderLayout.CENTER);
 
+        //Musica de fondo
         soundsEffect.loop();
 
+        //Caracteristicas de la ventana
         setFocusable(true);
         setUndecorated(true);
         setVisible(true);
         setSize(700, 500);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setCursor(Toolkit.getDefaultToolkit().createCustomCursor(
                 new ImageIcon(ArkanoidFrame.class.getResource("resource\\img\\cursor.png")).getImage(),
                 new Point(), "myCursor"));
     }
 
-    /**
-     * Panel donde se encuentra el juego.
-     */
     GamePanel gamePanel;
-    /**
-     * Panel donde se encuentra los datos de la partida.
-     */
     GameDataPanel gameDataPanel;
     LevelSelectionPanel levelSelectionPanel;
     CreationLevelPanel creationLevelPanel;
     MainMenuPanel mainMenuPanel;
     SkinPersonalizatonPanel skinPersonalizatonPanel;
     SoundsEffect soundsEffect = new SoundsEffect("background.wav");
+    public static final Color BACKGROUND_COLOR = new Color(147, 176, 171);
 }

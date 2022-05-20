@@ -56,7 +56,7 @@ public class CreationLevelPanel extends JPanel {
 
         addKeyListener(keyHandler);
         setFocusable(true);
-        setBackground(new Color(147, 176, 171));
+        setBackground(ArkanoidFrame.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
     }
 

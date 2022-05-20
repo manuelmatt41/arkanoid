@@ -56,7 +56,7 @@ public class GameDataPanel extends JPanel {
         lblVidas.setSize(lblVidas.getPreferredSize());
         add(lblVidas);
 
-        setBackground(new Color(147, 176, 171));
+        setBackground(ArkanoidFrame.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
         setFocusable(false);
     }

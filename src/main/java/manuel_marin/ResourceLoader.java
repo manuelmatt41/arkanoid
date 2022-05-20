@@ -25,14 +25,14 @@
  */
 package manuel_marin;
 
+import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 
-public class LevelLoader {
+public class ResourceLoader {
     /**
      * Lee un archivo de texto con una determinada estructura para crear el diseño
      * de nivel del juego. De forma que sea un 8x7 de numeros donde el 0 es "aire",
@@ -42,38 +42,44 @@ public class LevelLoader {
      * @return Devuelve un array de Jlabel que representan los ladrillos que hay en
      *         el mapa.
      */
-    public static JLabel[] levelLoad(File nivel) {
-        JLabel[] mapa = new JLabel[56];
+    public static Brick[] levelLoad(File nivel) {
+        Brick[] mapa = new Brick[56];
         int contador = 0;
+        int x = 0, y = 0;
         try (Scanner sc = new Scanner(nivel)) {
             while (sc.hasNext()) {
                 String fila = sc.nextLine();
 
                 if (fila.length() == 7) {
+
                     for (int i = 0; i < fila.length(); i++) {
                         if (fila.charAt(i) == '0') {
                             mapa[contador] = null;
                         }
 
                         if (fila.charAt(i) == '1') {
-                            JLabel brickAzul = new JLabel(
-                                    new ImageIcon(LevelLoader.class.getResource("resource\\img\\Brick1.png")));
+                            Brick brickAzul = new Brick(BLUE_BRICK, new Point(x, y));
                             mapa[contador] = brickAzul;
                         }
 
                         if (fila.charAt(i) == '2') {
-                            JLabel brickRojo = new JLabel(
-                                    new ImageIcon(LevelLoader.class.getResource("resource\\img\\Brick2.png")));
+                            Brick brickRojo = new Brick(RED_BRICK, new Point(x, y));
                             mapa[contador] = brickRojo;
                         }
 
                         if (fila.charAt(i) == '3') {
-                            JLabel brickGris = new JLabel(
-                                    new ImageIcon(LevelLoader.class.getResource("resource\\img\\Brick3.png")));
+                            Brick brickGris = new Brick(GRAY_BRICK, new Point(x, y));
                             mapa[contador] = brickGris;
                         }
 
                         contador++;
+
+                        if ((i + 1) % 7 == 0) {
+                            x = 0;
+                            y += 32;
+                        } else {
+                            x += 100;
+                        }
                     }
                 }
             }
@@ -83,4 +89,51 @@ public class LevelLoader {
 
         return mapa;
     }
+
+    public static ImageIcon skinLoader(File skinFile, int objectType) {
+        if (skinFile != null) {
+            if (skinFile.exists()) {
+                if (objectType == PLATFORM) {
+                    return new ImageIcon(skinFile.getAbsolutePath());
+                }
+    
+                if (objectType == BALL) {
+                    return new ImageIcon(skinFile.getAbsolutePath());
+                }
+            }
+        }
+
+        return skinLoaderResource(objectType);
+
+    }
+
+    private static ImageIcon skinLoaderResource(int objectType) {
+        if (objectType == PLATFORM) {
+            return new ImageIcon(ResourceLoader.class.getResource("resource\\img\\Plataforma.png"));
+        }
+
+        if (objectType == BALL) {
+            return new ImageIcon(ResourceLoader.class.getResource("resource\\img\\Pelota.png"));
+        }
+
+        if (objectType == BLUE_BRICK) {
+            return new ImageIcon(ResourceLoader.class.getResource("resource\\img\\Brick1.png"));
+        }
+
+        if (objectType == RED_BRICK) {
+            return new ImageIcon(ResourceLoader.class.getResource("resource\\img\\Brick2.png"));
+        }
+
+        if (objectType == GRAY_BRICK) {
+            return new ImageIcon(ResourceLoader.class.getResource("resource\\img\\Brick3.png"));
+        }
+
+        return new ImageIcon();
+    }
+
+    public static final int PLATFORM = 0;
+    public static final int BALL = 1;
+    public static final int BLUE_BRICK = 2;
+    public static final int RED_BRICK = 3;
+    public static final int GRAY_BRICK = 4;
 }

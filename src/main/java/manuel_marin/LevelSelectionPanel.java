@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
@@ -46,18 +47,26 @@ public class LevelSelectionPanel extends JPanel {
         setLayout(null);
 
         this.arkanoidFrame = ventanaPrincipal;
-        iniciarCantidadNiveles();
+        getLevelResource();
+        getLevelUser();
+        startComponent();
+        
+        setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
+    }
+
+    private void startComponent() {
         int x = 25, y = 25;
-        for (int i = 0; i < niveles.size(); i++) {
+        for (int i = 0; i < levelsFiles.size(); i++) {
             JLabel b = new JLabel(
-                    niveles.get(i).getName().substring(0, niveles.get(i).getName().lastIndexOf(".txt")));
+                    levelsFiles.get(i).getName().substring(0, levelsFiles.get(i).getName().lastIndexOf(".txt")));
             b.setSize(b.getPreferredSize());
             b.setLocation(x + 5, y + 10);
-            b.addKeyListener(keyHandler);
-            b.addMouseListener(mouseHandler);
+            b.addKeyListener(levelCreationKeyEventManager);
+            b.addMouseListener(levelCreationMouseEventManager);
             add(b);
 
-            JLabel lb = new JLabel(new ImageIcon(LevelSelectionPanel.class.getResource("resource\\img\\menupequeño.png")));
+            JLabel lb = new JLabel(
+                    new ImageIcon(LevelSelectionPanel.class.getResource("resource\\img\\menupequeño.png")));
             lb.setSize(lb.getPreferredSize());
             lb.setLocation(x, y);
             add(lb);
@@ -69,74 +78,79 @@ public class LevelSelectionPanel extends JPanel {
                 x += 110;
             }
         }
-
-        setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
     }
 
-    private void iniciarCantidadNiveles() {
-        File carpetaNiveles = null;
+    private void getLevelResource() {
+        File levelsResource = null;
         try {
-            carpetaNiveles = new File(LevelSelectionPanel.class.getResource("resource\\niveles").toURI());
+            levelsResource = new File(LevelSelectionPanel.class.getResource("resource\\niveles").toURI());
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            System.err.println("No se ha podido transformar en URI");
         }
 
-        for (int i = 0; i < carpetaNiveles.listFiles().length; i++) {
-            niveles.add(carpetaNiveles.listFiles()[i]);
+        if (levelsResource != null) {
+            for (int i = 0; i < levelsResource.listFiles().length; i++) {
+                levelsFiles.add(levelsResource.listFiles()[i]);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "No se ha podido cargar los niveles por defecto", "",
+                    JOptionPane.WARNING_MESSAGE);
         }
 
-        carpetaNiveles = new File(System.getProperty("user.home") + "\\AppData\\Roaming\\arkanoid\\niveles");
-
-        for (int i = 0; i < carpetaNiveles.listFiles().length; i++) {
-            niveles.add(carpetaNiveles.listFiles()[i]);
-        }
     }
 
-    private class mouseHandler extends MouseAdapter {
+    private void getLevelUser() {
+        File levelsUser = new File(System.getProperty("user.home") + "\\AppData\\Roaming\\arkanoid\\niveles");
+
+        for (int i = 0; i < levelsUser.listFiles().length; i++) {
+            levelsFiles.add(levelsUser.listFiles()[i]);
+        }
+
+    }
+
+    private class LevelCreationMouseEventManager extends MouseAdapter {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            
-            for (int i = 0; i < niveles.size(); i++) {
-                if (niveles.get(i) != null) {
-                    
-                    if (niveles.get(i).getName().contains(((JLabel)e.getSource()).getText())) {
+
+            for (int i = 0; i < levelsFiles.size(); i++) {
+                if (levelsFiles.get(i) != null) {
+                    if (levelsFiles.get(i).getName().contains(((JLabel) e.getSource()).getText())) {
                         arkanoidFrame.levelSelectionPanel.setVisible(false);
                         arkanoidFrame.getContentPane().removeAll();
-                        arkanoidFrame.removeKeyListener(keyHandler);
+                        arkanoidFrame.removeKeyListener(levelCreationKeyEventManager);
 
                         arkanoidFrame.gameDataPanel = new GameDataPanel();
-                        arkanoidFrame.gamePanel = new GamePanel(arkanoidFrame, niveles.get(i).getAbsolutePath());
+                        arkanoidFrame.gamePanel = new GamePanel(arkanoidFrame, levelsFiles.get(i));
                         arkanoidFrame.levelSelectionPanel = null;
-                        
+
                         arkanoidFrame.add(arkanoidFrame.gameDataPanel, BorderLayout.NORTH);
                         arkanoidFrame.add(arkanoidFrame.gamePanel, BorderLayout.CENTER);
-                        arkanoidFrame.addKeyListener(arkanoidFrame.gamePanel.movimientoPlataforma);
+                        arkanoidFrame.addKeyListener(arkanoidFrame.gamePanel.platformMovement);
                     }
                 }
             }
 
         }
 
-
     }
 
-    private class KeyHandler extends KeyAdapter {
+    private class LevelCreationKeyEventManager extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
             if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                 arkanoidFrame.levelSelectionPanel.setVisible(false);
                 arkanoidFrame.getContentPane().removeAll();
-                arkanoidFrame.removeKeyListener(keyHandler);
-                
+                arkanoidFrame.removeKeyListener(levelCreationKeyEventManager);
+
                 arkanoidFrame.mainMenuPanel = new MainMenuPanel(arkanoidFrame);
                 arkanoidFrame.add(arkanoidFrame.mainMenuPanel, BorderLayout.CENTER);
             }
         }
     }
 
-    ArrayList<File> niveles = new ArrayList<>();
+    ArrayList<File> levelsFiles = new ArrayList<>();
     ArkanoidFrame arkanoidFrame;
-    mouseHandler mouseHandler = new mouseHandler();
-    KeyHandler keyHandler = new KeyHandler();
+    LevelCreationMouseEventManager levelCreationMouseEventManager = new LevelCreationMouseEventManager();
+    LevelCreationKeyEventManager levelCreationKeyEventManager = new LevelCreationKeyEventManager();
 }

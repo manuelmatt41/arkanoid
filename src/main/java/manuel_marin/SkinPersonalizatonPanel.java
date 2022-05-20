@@ -61,7 +61,7 @@ public class SkinPersonalizatonPanel extends JPanel {
         this.arkanoidFrame = arkanoidFrame;
         iniciarComponentes();
         addKeyListener(keyHandler);
-        setBackground(new Color(147, 176, 171));
+        setBackground(ArkanoidFrame.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
     }
 

@@ -1,1 +1,1 @@
-Añadido cursor personalizado
+Mejorando codigo de las fisicas y gameplay.
