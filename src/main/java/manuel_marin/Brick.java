@@ -9,10 +9,7 @@ public class Brick extends JLabel {
         super(ResourceLoader.skinLoader(null, brickType));
 
         cornerHitbox = new JLabel[4];
-        setCornerHitbox();
-
         sideHitbox = new JLabel[4];
-        setSideHitBox();
 
         setSize(getPreferredSize());
         setLocation(location);

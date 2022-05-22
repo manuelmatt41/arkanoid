@@ -73,6 +73,10 @@ public class GamePanel extends JPanel {
         }
 
         platform = new Platform(PLATFORM_SPAWN);
+
+        for (int i = 0; i < platform.cornerHitbox.length; i++) {
+            add(platform.cornerHitbox[i]);
+        }
         add(platform);
 
         ball = new Ball(BALL_SPAWN);
@@ -114,13 +118,14 @@ public class GamePanel extends JPanel {
             int x = platform.getLocation().x;
             int y = platform.getLocation().y;
 
-            if (platform.direction) {
-                x += PLATFORM_SPEED;
-            } else {
-                x -= PLATFORM_SPEED;
-            }
+            platform.setLocation(platform.direction ? x + PLATFORM_SPEED : x - PLATFORM_SPEED, y);
 
-            platform.setLocation(x, y);
+            for (int i = 0; i < platform.cornerHitbox.length; i++) {
+                platform.cornerHitbox[i].setLocation(
+                        platform.direction ? platform.cornerHitbox[i].getLocation().x + PLATFORM_SPEED
+                                : platform.cornerHitbox[i].getLocation().x - PLATFORM_SPEED,
+                        platform.cornerHitbox[i].getLocation().y);
+            }
         }
 
     }
@@ -130,6 +135,7 @@ public class GamePanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             ballHitBrick();
+            platformHit();
 
             if (ballX <= LEFT_MARGIN_LIMIT) {
                 ball.directionX = true;
@@ -168,12 +174,68 @@ public class GamePanel extends JPanel {
                     if (bricks[i] != null) {
                         if (bricks[i].isVisible()) {
                             if (bricks[i].getBounds().intersects(ball.getBounds())) {
+                                for (int j = 0; j < bricks[i].sideHitbox.length; j++) {
+                                    if (bricks[i].sideHitbox[j].getBounds().intersects(ball.getBounds())) {
+                                        if (j == 0) {
+                                            ball.directionY = false;
+                                        }
+
+                                        if (j == 1) {
+                                            ball.directionX = false;
+                                        }
+
+                                        if (j == 2) {
+                                            ball.directionX = true;
+                                        }
+
+                                        if (j == 3) {
+                                            ball.directionY = true;
+                                        }
+
+                                        actualSpeed = ball.NORMAL_SPEED;
+
+                                        if (bricks[i].cornerHitbox[j].getBounds().intersects(ball.getBounds())) {
+                                            if (j == 0 || j == 2) {
+                                                ball.directionX = false;
+                                            } else {
+                                                ball.directionX = true;
+                                            }
+
+                                            actualSpeed = ball.ACELERATE_SPEED;
+                                        }
+                                    }
+                                }
+
                                 bricks[i].setVisible(false);
+                                ballX += ball.directionX ? 3 : -3;
+                                soundsEffect = new SoundsEffect("pop.wav");
+                                soundsEffect.play();
                             }
                         }
                     }
                 }
-            }) {}.start();;
+            }) {
+            }.start();
+        }
+
+        public void platformHit() {
+            new Thread(() -> {
+                if (ball.getBounds().intersects(platform.getBounds())) {
+                    for (int i = 0; i < platform.cornerHitbox.length; i++) {
+                        if (ball.getBounds().intersects(platform.cornerHitbox[i].getBounds())) {
+                            if (i == 0) {
+                                ball.directionX = false;
+                            }
+                            if (i == 1) {
+                                ball.directionX = true;
+                            }
+                            actualSpeed = ball.ACELERATE_SPEED;
+                        }
+                    }
+                    ball.directionY = false;
+                }
+            }) {
+            }.start();
         }
 
         public void parameterUpdate() {
@@ -196,6 +258,7 @@ public class GamePanel extends JPanel {
     Timer ballFPS;
     PlatformMovement platformMovement = new PlatformMovement();
     BallMovement ballMovement = new BallMovement();
+    SoundsEffect soundsEffect;
     final Point PLATFORM_SPAWN = new Point(300, 440);
     final Point BALL_SPAWN = new Point(340, 420);
     final int PLATFORM_SPEED = 10;
