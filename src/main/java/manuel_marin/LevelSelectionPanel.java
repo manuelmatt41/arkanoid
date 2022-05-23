@@ -42,7 +42,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
+/**
+ * Clase que hereda de JPanel para gestionar el menu de seleccion de niveles.
+ */
 public class LevelSelectionPanel extends JPanel {
+    /**
+     * Inicializa las propiedades de los parametros, las caracteristicas del panel.
+     * @param ventanaPrincipal Valor del JFrame principal.
+     */
     public LevelSelectionPanel(ArkanoidFrame ventanaPrincipal) {
         setLayout(null);
 
@@ -54,6 +61,9 @@ public class LevelSelectionPanel extends JPanel {
         setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
     }
 
+    /**
+     * Inicia los componentes del JPanel.
+     */
     private void startComponent() {
         int x = 25, y = 25;
         for (int i = 0; i < levelsFiles.size(); i++) {
@@ -70,12 +80,6 @@ public class LevelSelectionPanel extends JPanel {
             b.addMouseListener(levelCreationMouseEventManager);
             add(b);
 
-            // JLabel lb = new JLabel(
-            //         new ImageIcon(LevelSelectionPanel.class.getResource("resource\\img\\menupequeño.png")));
-            // lb.setSize(lb.getPreferredSize());
-            // lb.setLocation(x, y);
-            // add(lb);
-
             if ((i + 1) % 6 == 0) {
                 x = 25;
                 y += 60;
@@ -85,6 +89,9 @@ public class LevelSelectionPanel extends JPanel {
         }
     }
 
+    /**
+     * Lee los archivos de los niveles por defecto del juego.
+     */
     private void getLevelResource() {
         boolean error = false;
         for (int i = 0; i < ResourceLevels.values().length; i++) {
@@ -100,6 +107,9 @@ public class LevelSelectionPanel extends JPanel {
         }
     }
 
+    /**
+     * Lee los archivos de los niveles creados por el usuario.
+     */
     private void getLevelUser() {
         File levelsUser = new File(System.getProperty("user.home") + "\\AppData\\Roaming\\arkanoid\\niveles");
 
@@ -109,8 +119,14 @@ public class LevelSelectionPanel extends JPanel {
 
     }
 
+    /**
+     * Clase que maneja los eventos de raton de {@link #LevelSelectionPanel()}
+     */
     private class LevelCreationMouseEventManager extends MouseAdapter {
 
+        /**
+         * Inicializa el panel del juego.
+         */
         @Override
         public void mouseClicked(MouseEvent e) {
 
@@ -136,6 +152,9 @@ public class LevelSelectionPanel extends JPanel {
 
     }
 
+    /**
+     * Clase que maneja los eventos de teclado de {@link #LevelSelectionPanel()}.
+     */
     private class LevelCreationKeyEventManager extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
@@ -144,12 +163,16 @@ public class LevelSelectionPanel extends JPanel {
                 arkanoidFrame.getContentPane().removeAll();
                 arkanoidFrame.removeKeyListener(levelCreationKeyEventManager);
 
+                arkanoidFrame.levelSelectionPanel = null;
                 arkanoidFrame.mainMenuPanel = new MainMenuPanel(arkanoidFrame);
                 arkanoidFrame.add(arkanoidFrame.mainMenuPanel, BorderLayout.CENTER);
             }
         }
     }
 
+    /**
+     * Niveles para iniciar el menu.
+     */
     ArrayList<File> levelsFiles = new ArrayList<>();
     ArkanoidFrame arkanoidFrame;
     LevelCreationMouseEventManager levelCreationMouseEventManager = new LevelCreationMouseEventManager();

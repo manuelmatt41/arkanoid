@@ -25,6 +25,7 @@
  */
 package manuel_marin;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -39,13 +40,14 @@ import javax.swing.Timer;
 import javax.swing.border.EtchedBorder;
 
 /**
- * Clase donde se muestra el juego.
+ * Clase que hereda de JPanel para mostrar el juego.
  */
 public class GamePanel extends JPanel {
     /**
      * inicializa las propiedades de los parametros.
      * 
      * @param arkanoidFrame El JFrame donde se carga la clase.
+     * @param levelFile Archivo del nivel que se va a cargar.
      */
     public GamePanel(ArkanoidFrame arkanoidFrame, File levelFile) {
         setLayout(null);
@@ -58,10 +60,13 @@ public class GamePanel extends JPanel {
         setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
         setBackground(ArkanoidFrame.BACKGROUND_COLOR);
     }
-
+    
+    /**
+     * Inicializa los componentes del panel.
+     */
     private void startComponents() {
         bricks = ResourceLoader.levelLoad(levelFile);
-
+        bricksVisibles = 0;
         for (int i = 0; i < bricks.length; i++) {
             if (bricks[i] != null) {
                 add(bricks[i]);
@@ -69,6 +74,7 @@ public class GamePanel extends JPanel {
                     add(bricks[i].getCornerHitbox()[j]);
                     add(bricks[i].getSideHitBox()[j]);
                 }
+                bricksVisibles++;
             }
         }
 
@@ -83,12 +89,33 @@ public class GamePanel extends JPanel {
         add(ball);
     }
 
+    /**
+     * Inicializa los timers que gestionan los movimientos.
+     */
     private void startTimers() {
         platformFPS = new Timer(17, platformMovement);
         ballFPS = new Timer(17, ballMovement);
     }
 
+    public void gameExit() {
+        arkanoidFrame.gamePanel.setVisible(false);
+        arkanoidFrame.gameDataPanel.setVisible(false);
+        arkanoidFrame.getContentPane().removeAll();
+        arkanoidFrame.removeKeyListener(platformMovement);
+
+        arkanoidFrame.gameDataPanel = null;
+        arkanoidFrame.gamePanel = null;
+        arkanoidFrame.mainMenuPanel = new MainMenuPanel(arkanoidFrame);
+        arkanoidFrame.add(arkanoidFrame.mainMenuPanel, BorderLayout.CENTER);
+    }
+
+    /**
+     * Clase que maneja los movimientos con teclado de la plataforma.
+     */
     private class PlatformMovement extends KeyAdapter implements ActionListener {
+        /**
+         * Activa los controles del juego.
+         */
         @Override
         public void keyPressed(KeyEvent e) {
             if (e.getKeyCode() == KeyEvent.VK_LEFT) {
@@ -108,11 +135,17 @@ public class GamePanel extends JPanel {
 
         }
 
+        /**
+         * Desactiva los controles del juego.
+         */
         @Override
         public void keyReleased(KeyEvent e) {
             platformFPS.stop();
         }
 
+        /**
+         * Se encarga de mover la plataforma.
+         */
         @Override
         public void actionPerformed(ActionEvent e) {
             x = platform.getLocation().x;
@@ -142,13 +175,25 @@ public class GamePanel extends JPanel {
 
         }
 
+        /**
+         * Posicion x de la plataforma
+         */
         int x;
+        /**
+         * Posicion y de la plataforma
+         */
         int y;
 
     }
 
+    /**
+     * Clase que gestiona los movimientos de la pelota.
+     */
     private class BallMovement implements ActionListener {
 
+        /**
+         * Mueve la pelota por el panel, detectando las colisiones para los cambios de direccion.
+         */
         @Override
         public void actionPerformed(ActionEvent e) {
             ballHitBrick();
@@ -172,6 +217,10 @@ public class GamePanel extends JPanel {
                 platform.setLocation(PLATFORM_SPAWN);
                 ball.setLocation(BALL_SPAWN);
                 ballFPS.stop();
+
+                if (arkanoidFrame.gameDataPanel.vidas == 0) {
+                    gameExit();
+                }
                 return;
             }
 
@@ -190,6 +239,9 @@ public class GamePanel extends JPanel {
             ball.setLocation(ballX, ballY);
         }
 
+        /**
+         * Se encarga de detectar las colisiones de la pelota con los bricks de la partida.
+         */
         public void ballHitBrick() {
             new Thread(() -> {
                 for (int i = 0; i < bricks.length; i++) {
@@ -230,6 +282,7 @@ public class GamePanel extends JPanel {
 
                                 if (bricks[i].getClass() == BlueBrick.class) {
                                     bricks[i].setVisible(false);
+                                    bricksVisibles--;
                                 }
 
                                 if (bricks[i].getClass() == RedBrick.class) {
@@ -248,10 +301,17 @@ public class GamePanel extends JPanel {
                         }
                     }
                 }
+
+                if (bricksVisibles == EMPTY_MAP) {
+                    gameExit();
+                }
             }) {
             }.start();
         }
 
+        /**
+         * Se encarga de detectar las colisiones de la pelota con la plataforma.
+         */
         public void platformHit() {
             new Thread(() -> {
                 if (ball.getBounds().intersects(platform.getBounds())) {
@@ -272,32 +332,82 @@ public class GamePanel extends JPanel {
             }.start();
         }
 
+        /**
+         * Actualiza los parametros cada vez que se pierde o inicia el panel.
+         */
         public void parameterUpdate() {
             ballX = ball.getLocation().x;
             ballY = ball.getLocation().y;
             actualSpeed = ball.NORMAL_SPEED;
         }
 
+        /**
+         * Posicion X de la pelota.
+         */
         int ballX;
+        /**
+         * Posicion Y de la pelota.
+         */
         int ballY;
+        /**
+         * Velocidad de la pelota en el panel.
+         */
         int actualSpeed;
     }
 
+    /**
+     * Archivo que contiene el nivel de la partida.
+     */
     File levelFile;
+    /**
+     * Numero de bricks en la partida
+     */
+    int bricksVisibles;
     ArkanoidFrame arkanoidFrame;
+    /**
+     * Lista de los bricks de la partida.
+     */
     Brick[] bricks;
     Platform platform;
     Ball ball;
+    /**
+     * Se encarga de activar {@link #platformMovement()}
+     */
     Timer platformFPS;
+    /**
+     * Se encarga de acticar cada cierto tiempo {@link #ballMovement()}
+     */
     Timer ballFPS;
     PlatformMovement platformMovement = new PlatformMovement();
     BallMovement ballMovement = new BallMovement();
     SoundsEffect soundsEffect;
-    final Point PLATFORM_SPAWN = new Point(300, 440);
-    final Point BALL_SPAWN = new Point(340, 420);
-    final int PLATFORM_SPEED = 10;
-    final int LEFT_MARGIN_LIMIT = 0;
-    final int UP_MARGIN_LIMIT = 0;
-    final int RIGHT_MARGIN_LIMIT = 700;
-    final int DOWN_MARGIN_LIMIT = 480;
+    /**
+     * Punto de spawn de la plataforma.
+     */
+    public final Point PLATFORM_SPAWN = new Point(300, 440);
+    /**
+     * Punto de spawn de la pelota.
+     */
+    public final Point BALL_SPAWN = new Point(340, 420);
+    /**
+     * Velocidad de movimiento de la plataforma.
+     */
+    public final int PLATFORM_SPEED = 10;
+    /**
+     * Limite izquierdo de la ventana.
+     */
+    public final int LEFT_MARGIN_LIMIT = 0;
+    /**
+     * Limite de arriba de la ventana.
+     */
+    public final int UP_MARGIN_LIMIT = 0;
+    /**
+     * Limite derecho de la ventana.
+     */
+    public final int RIGHT_MARGIN_LIMIT = 700;
+    /**
+     * Limite de abajo de la ventana.
+     */
+    public final int DOWN_MARGIN_LIMIT = 480;
+    public final int EMPTY_MAP = 0;
 }
