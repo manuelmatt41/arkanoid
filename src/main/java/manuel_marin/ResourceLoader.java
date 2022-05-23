@@ -58,18 +58,15 @@ public class ResourceLoader {
                         }
 
                         if (fila.charAt(i) == '1') {
-                            Brick brickAzul = new Brick(BLUE_BRICK, new Point(x, y));
-                            mapa[contador] = brickAzul;
+                            mapa[contador] = new BlueBrick(new Point(x, y));
                         }
 
                         if (fila.charAt(i) == '2') {
-                            Brick brickRojo = new Brick(RED_BRICK, new Point(x, y));
-                            mapa[contador] = brickRojo;
+                            mapa[contador] = new RedBrick(new Point(x, y));
                         }
 
                         if (fila.charAt(i) == '3') {
-                            Brick brickGris = new Brick(GRAY_BRICK, new Point(x, y));
-                            mapa[contador] = brickGris;
+                            mapa[contador] = new GrayBrick(new Point(x, y));
                         }
 
                         contador++;
@@ -90,50 +87,18 @@ public class ResourceLoader {
         return mapa;
     }
 
-    public static ImageIcon skinLoader(File skinFile, int objectType) {
-        if (skinFile != null) {
-            if (skinFile.exists()) {
-                if (objectType == PLATFORM) {
-                    return new ImageIcon(skinFile.getAbsolutePath());
-                }
-    
-                if (objectType == BALL) {
-                    return new ImageIcon(skinFile.getAbsolutePath());
-                }
+    public static ImageIcon skinLoader(ResourcesImg resourceType) {
+        if (resourceType.userFile != null) {
+            if (resourceType.userFile.exists()) {
+                return new ImageIcon(resourceType.userFile.getAbsolutePath());
             }
         }
 
-        return skinLoaderResource(objectType);
+        return skinLoaderResource(resourceType);
 
     }
 
-    private static ImageIcon skinLoaderResource(int objectType) {
-        if (objectType == PLATFORM) {
-            return new ImageIcon(ResourceLoader.class.getResource("resource\\img\\Plataforma.png"));
-        }
-
-        if (objectType == BALL) {
-            return new ImageIcon(ResourceLoader.class.getResource("resource\\img\\Pelota.png"));
-        }
-
-        if (objectType == BLUE_BRICK) {
-            return new ImageIcon(ResourceLoader.class.getResource("resource\\img\\Brick1.png"));
-        }
-
-        if (objectType == RED_BRICK) {
-            return new ImageIcon(ResourceLoader.class.getResource("resource\\img\\Brick2.png"));
-        }
-
-        if (objectType == GRAY_BRICK) {
-            return new ImageIcon(ResourceLoader.class.getResource("resource\\img\\Brick3.png"));
-        }
-
-        return new ImageIcon();
+    private static ImageIcon skinLoaderResource(ResourcesImg resourceType) {
+        return new ImageIcon(resourceType.resourcePath);
     }
-
-    public static final int PLATFORM = 0;
-    public static final int BALL = 1;
-    public static final int BLUE_BRICK = 2;
-    public static final int RED_BRICK = 3;
-    public static final int GRAY_BRICK = 4;
 }

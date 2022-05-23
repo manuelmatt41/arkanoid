@@ -119,7 +119,7 @@ public class MainMenuPanel extends JPanel {
     /**
      * Crea una Font personalizada y si no es capaz de hacerlo devuelve una Font por defecto.
      */
-    private void createCustomFont() {
+    public void createCustomFont() {
         try {
             font = Font.createFont(Font.TRUETYPE_FONT,
                     new File(MainMenuPanel.class.getResource("resource\\StreamerDemo-eZ4Dg.otf").toURI()));
@@ -134,7 +134,7 @@ public class MainMenuPanel extends JPanel {
      * @param size Tamaño que va a tener la Font.
      * @return Devuelve la Font reescalada.
      */
-    private Font setFontSize(Font font, int size) {
+    public Font setFontSize(Font font, int size) {
         Map<TextAttribute, Object> map = new Hashtable<TextAttribute, Object>();
         map.put(TextAttribute.SIZE, size);
 

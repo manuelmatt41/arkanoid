@@ -1,8 +1,6 @@
 package manuel_marin;
 
-import java.awt.Color;
 import java.awt.Point;
-import java.io.File;
 
 import javax.swing.JLabel;
 
@@ -12,7 +10,7 @@ public class Platform extends JLabel {
 
         cornerHitbox = new JLabel[2];
 
-        this.setIcon(ResourceLoader.skinLoader(skinFile, ResourceLoader.PLATFORM));
+        this.setIcon(ResourceLoader.skinLoader(ResourcesImg.PLATFORM));
         this.setSize(this.getPreferredSize());
         this.setLocation(location);
         setCornerHitbox();
@@ -35,14 +33,11 @@ public class Platform extends JLabel {
         for (int i = 0; i < cornerHitbox.length; i++) {
             JLabel l = new JLabel();
             l.setSize(5, 5);
-            l.setOpaque(true);
-            l.setBackground(Color.green);
             l.setLocation(calculateCornersHitboxs(i));
             cornerHitbox[i] = l;
         }
     }
 
-    File skinFile = new File(System.getProperty("user.home") + "\\AppData\\Roaming\\arkanoid\\img\\Plataforma.png");
     boolean direction;
     JLabel[] cornerHitbox;
 }

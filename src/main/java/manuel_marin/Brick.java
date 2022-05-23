@@ -5,12 +5,11 @@ import java.awt.Point;
 import javax.swing.JLabel;
 
 public class Brick extends JLabel {
-    public Brick(int brickType, Point location) {
-        super(ResourceLoader.skinLoader(null, brickType));
 
+    public Brick(ResourcesImg brickType, Point location) {
+        super(ResourceLoader.skinLoader(brickType));
         cornerHitbox = new JLabel[4];
         sideHitbox = new JLabel[4];
-
         setSize(getPreferredSize());
         setLocation(location);
     }
@@ -94,6 +93,7 @@ public class Brick extends JLabel {
     public JLabel[] getSideHitBox() {
         return sideHitbox;
     }
+
 
     JLabel[] cornerHitbox;
     JLabel[] sideHitbox;

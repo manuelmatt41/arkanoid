@@ -27,6 +27,7 @@ package manuel_marin;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -36,7 +37,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -50,7 +50,7 @@ public class LevelSelectionPanel extends JPanel {
         getLevelResource();
         getLevelUser();
         startComponent();
-        
+
         setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
     }
 
@@ -59,17 +59,22 @@ public class LevelSelectionPanel extends JPanel {
         for (int i = 0; i < levelsFiles.size(); i++) {
             JLabel b = new JLabel(
                     levelsFiles.get(i).getName().substring(0, levelsFiles.get(i).getName().lastIndexOf(".txt")));
-            b.setSize(b.getPreferredSize());
+            b.setFont(new Font("Consolas", Font.BOLD, 16));
+            b.setForeground(Color.white);
+            b.setSize(100, 60);
             b.setLocation(x + 5, y + 10);
+            b.setOpaque(true);
+            b.setBackground(Color.blue);
+            b.setBorder(BorderFactory.createEtchedBorder(Color.gray, Color.gray));
             b.addKeyListener(levelCreationKeyEventManager);
             b.addMouseListener(levelCreationMouseEventManager);
             add(b);
 
-            JLabel lb = new JLabel(
-                    new ImageIcon(LevelSelectionPanel.class.getResource("resource\\img\\menupequeño.png")));
-            lb.setSize(lb.getPreferredSize());
-            lb.setLocation(x, y);
-            add(lb);
+            // JLabel lb = new JLabel(
+            //         new ImageIcon(LevelSelectionPanel.class.getResource("resource\\img\\menupequeño.png")));
+            // lb.setSize(lb.getPreferredSize());
+            // lb.setLocation(x, y);
+            // add(lb);
 
             if ((i + 1) % 6 == 0) {
                 x = 25;
@@ -81,22 +86,18 @@ public class LevelSelectionPanel extends JPanel {
     }
 
     private void getLevelResource() {
-        File levelsResource = null;
-        try {
-            levelsResource = new File(LevelSelectionPanel.class.getResource("resource\\niveles").toURI());
-        } catch (URISyntaxException e) {
-            System.err.println("No se ha podido transformar en URI");
-        }
-
-        if (levelsResource != null) {
-            for (int i = 0; i < levelsResource.listFiles().length; i++) {
-                levelsFiles.add(levelsResource.listFiles()[i]);
+        boolean error = false;
+        for (int i = 0; i < ResourceLevels.values().length; i++) {
+            try {
+                levelsFiles.add(new File(ResourceLevels.values()[i].resourcePath.toURI()));
+            } catch (URISyntaxException e) {
+                error = true;
             }
-        } else {
-            JOptionPane.showMessageDialog(this, "No se ha podido cargar los niveles por defecto", "",
-                    JOptionPane.WARNING_MESSAGE);
         }
 
+        if (error) {
+            JOptionPane.showMessageDialog(null, "No se han cargado los niveles por defecto");
+        }
     }
 
     private void getLevelUser() {

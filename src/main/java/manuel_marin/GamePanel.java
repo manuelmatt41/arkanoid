@@ -115,18 +115,35 @@ public class GamePanel extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            int x = platform.getLocation().x;
-            int y = platform.getLocation().y;
+            x = platform.getLocation().x;
+            y = platform.getLocation().y;
 
-            platform.setLocation(platform.direction ? x + PLATFORM_SPEED : x - PLATFORM_SPEED, y);
+            if (platform.direction) {
+                if (x <= RIGHT_MARGIN_LIMIT - platform.getBounds().width) {
+                    platform.setLocation(x + PLATFORM_SPEED, y);
 
-            for (int i = 0; i < platform.cornerHitbox.length; i++) {
-                platform.cornerHitbox[i].setLocation(
-                        platform.direction ? platform.cornerHitbox[i].getLocation().x + PLATFORM_SPEED
-                                : platform.cornerHitbox[i].getLocation().x - PLATFORM_SPEED,
-                        platform.cornerHitbox[i].getLocation().y);
+                    for (int i = 0; i < platform.cornerHitbox.length; i++) {
+                        x = platform.cornerHitbox[i].getLocation().x;
+                        y = platform.cornerHitbox[i].getLocation().y;
+                        platform.cornerHitbox[i].setLocation(x + PLATFORM_SPEED, y);
+                    }
+                }
+            } else {
+                if (x >= LEFT_MARGIN_LIMIT) {
+                    platform.setLocation(x - PLATFORM_SPEED, y);
+
+                    for (int i = 0; i < platform.cornerHitbox.length; i++) {
+                        x = platform.cornerHitbox[i].getLocation().x;
+                        y = platform.cornerHitbox[i].getLocation().y;
+                        platform.cornerHitbox[i].setLocation(x - PLATFORM_SPEED, y);
+                    }
+                }
             }
+
         }
+
+        int x;
+        int y;
 
     }
 
@@ -141,7 +158,7 @@ public class GamePanel extends JPanel {
                 ball.directionX = true;
             }
 
-            if (ballX >= RIGHT_MARGIN_LIMIT) {
+            if (ballX >= RIGHT_MARGIN_LIMIT - ball.getBounds().width) {
                 ball.directionX = false;
             }
 
@@ -149,8 +166,13 @@ public class GamePanel extends JPanel {
                 ball.directionY = true;
             }
 
-            if (ballY >= DOWN_MARGIN_LIMIT) {
-                ball.directionY = false;
+            if (ballY >= DOWN_MARGIN_LIMIT - ball.getBounds().height) {
+                arkanoidFrame.gameDataPanel.vidas--;
+                arkanoidFrame.gameDataPanel.updateLabels();
+                platform.setLocation(PLATFORM_SPAWN);
+                ball.setLocation(BALL_SPAWN);
+                ballFPS.stop();
+                return;
             }
 
             if (ball.directionX) {
@@ -206,10 +228,22 @@ public class GamePanel extends JPanel {
                                     }
                                 }
 
-                                bricks[i].setVisible(false);
+                                if (bricks[i].getClass() == BlueBrick.class) {
+                                    bricks[i].setVisible(false);
+                                }
+
+                                if (bricks[i].getClass() == RedBrick.class) {
+                                    remove(bricks[i]);
+                                    bricks[i] = new BlueBrick(bricks[i].getLocation());
+                                    add(bricks[i]);
+                                    bricks[i].repaint();
+                                }
+
                                 ballX += ball.directionX ? 3 : -3;
                                 soundsEffect = new SoundsEffect("pop.wav");
                                 soundsEffect.play();
+                                arkanoidFrame.gameDataPanel.puntuacion += 100;
+                                arkanoidFrame.gameDataPanel.updateLabels();;
                             }
                         }
                     }
@@ -264,6 +298,6 @@ public class GamePanel extends JPanel {
     final int PLATFORM_SPEED = 10;
     final int LEFT_MARGIN_LIMIT = 0;
     final int UP_MARGIN_LIMIT = 0;
-    final int RIGHT_MARGIN_LIMIT = 680;
-    final int DOWN_MARGIN_LIMIT = 460;
+    final int RIGHT_MARGIN_LIMIT = 700;
+    final int DOWN_MARGIN_LIMIT = 480;
 }
