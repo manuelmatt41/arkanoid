@@ -39,7 +39,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
- * Clase qyue gestiona los sonidos del juego
+ * Clase que gestiona los sonidos del juego
  */
 @SuppressWarnings("all")
 public class SoundsEffect {
