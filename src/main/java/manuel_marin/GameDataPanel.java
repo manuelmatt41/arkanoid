@@ -41,10 +41,11 @@ public class GameDataPanel extends JPanel {
     /**
      * Inicializa las propiedades de los parametros.
      */
-    public GameDataPanel() {
+    public GameDataPanel(ArkanoidFrame arkanoidFrame) {
         setLayout(new FlowLayout(FlowLayout.CENTER, 40, 0));
         puntuacion = 0;
         vidas = 3;
+        this.arkanoidFrame = arkanoidFrame;
 
         lblPuntuacion = new JLabel("Puntuacion: " + puntuacion);
         lblPuntuacion.setFont(new Font("sans serif", Font.BOLD, 16));
@@ -56,7 +57,7 @@ public class GameDataPanel extends JPanel {
         lblVidas.setSize(lblVidas.getPreferredSize());
         add(lblVidas);
 
-        setBackground(ArkanoidFrame.BACKGROUND_COLOR);
+        setBackground(arkanoidFrame.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
         setFocusable(false);
     }
@@ -87,4 +88,5 @@ public class GameDataPanel extends JPanel {
      * Valor de las vidad de la partida.
      */
     int vidas;
+    ArkanoidFrame arkanoidFrame;
 }

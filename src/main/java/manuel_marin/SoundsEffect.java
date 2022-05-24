@@ -38,8 +38,15 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+/**
+ * Clase qyue gestiona los sonidos del juego
+ */
 @SuppressWarnings("all")
 public class SoundsEffect {
+    /**
+     * Inicializa las propiedades de los parametros
+     * @param archivo Nombre del archivo de sonidos que va leer
+     */
     public SoundsEffect(String archivo) {
         try {
             audioInputStream = AudioSystem.getAudioInputStream(
@@ -65,6 +72,9 @@ public class SoundsEffect {
         
     }
 
+    /**
+     * Inicia la repoduccion en otro hilo hasta que acabe
+     */
     public void play() {
         FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
         volume.setValue(-5.0f);
@@ -75,6 +85,9 @@ public class SoundsEffect {
         }.start();
     }
 
+    /**
+     * Inicia la repoduccion en otro hilo continuamente cada vez que acabe
+     */
     public void loop() {
         FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
         volume.setValue(-15.0f);

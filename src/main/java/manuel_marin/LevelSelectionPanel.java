@@ -59,6 +59,7 @@ public class LevelSelectionPanel extends JPanel {
         startComponent();
 
         setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
+        setBackground(arkanoidFrame.BACKGROUND_COLOR);
     }
 
     /**
@@ -74,7 +75,7 @@ public class LevelSelectionPanel extends JPanel {
             b.setSize(100, 60);
             b.setLocation(x + 5, y + 10);
             b.setOpaque(true);
-            b.setBackground(Color.blue);
+            b.setBackground(arkanoidFrame.OPTION_COLOR_UNSELECTED);
             b.setBorder(BorderFactory.createEtchedBorder(Color.gray, Color.gray));
             b.addKeyListener(levelCreationKeyEventManager);
             b.addMouseListener(levelCreationMouseEventManager);
@@ -137,7 +138,7 @@ public class LevelSelectionPanel extends JPanel {
                         arkanoidFrame.getContentPane().removeAll();
                         arkanoidFrame.removeKeyListener(levelCreationKeyEventManager);
 
-                        arkanoidFrame.gameDataPanel = new GameDataPanel();
+                        arkanoidFrame.gameDataPanel = new GameDataPanel(arkanoidFrame);
                         arkanoidFrame.gamePanel = new GamePanel(arkanoidFrame, levelsFiles.get(i));
                         arkanoidFrame.levelSelectionPanel = null;
 
@@ -148,6 +149,20 @@ public class LevelSelectionPanel extends JPanel {
                 }
             }
 
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            JLabel l = (JLabel) e.getSource();
+
+            l.setBackground(arkanoidFrame.OPTION_COLOR_SELECTED);
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            JLabel l = (JLabel) e.getSource();
+
+            l.setBackground(arkanoidFrame.OPTION_COLOR_UNSELECTED);
         }
 
     }

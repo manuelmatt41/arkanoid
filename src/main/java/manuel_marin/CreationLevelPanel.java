@@ -48,18 +48,29 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 
+/**
+ * Clase que hereda de JPanel para gestionar el creador de niveles
+ */
 public class CreationLevelPanel extends JPanel {
-    public CreationLevelPanel(ArkanoidFrame ventanaPrincipal) {
+    /**
+     * Inicializa las propiedades de los parametros
+     * 
+     * @param arkanoidFrame
+     */
+    public CreationLevelPanel(ArkanoidFrame arkanoidFrame) {
         setLayout(null);
-        this.ventanaPrincipal = ventanaPrincipal;
+        this.arkanoidFrame = arkanoidFrame;
         iniciarComponentes();
 
         addKeyListener(keyHandler);
         setFocusable(true);
-        setBackground(ArkanoidFrame.BACKGROUND_COLOR);
+        setBackground(arkanoidFrame.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
     }
 
+    /**
+     * Inicia los componentes del JPanel
+     */
     private void iniciarComponentes() {
         int x = 0, y = 0;
         espaciosVacios = new JLabel[56];
@@ -137,6 +148,9 @@ public class CreationLevelPanel extends JPanel {
         add(lbInformacion);
     }
 
+    /**
+     * Pide un nombre para guardar el arhivo del nivel
+     */
     public void pedirNombreArchivo() {
         int casillasPintadas = espaciosVacios.length;
 
@@ -171,6 +185,11 @@ public class CreationLevelPanel extends JPanel {
         }
     }
 
+    /**
+     * Guarda el nivel en el AppData del usuario.
+     * 
+     * @param nombreArchivo Nombre que va a tener el archivo
+     */
     public void guardarNivel(String nombreArchivo) {
         File file = new File(
                 System.getProperty("user.home") + "\\AppData\\Roaming\\arkanoid\\niveles\\" + nombreArchivo + ".txt");
@@ -212,8 +231,14 @@ public class CreationLevelPanel extends JPanel {
 
     }
 
+    /**
+     * Clase que gestiona los eventos de los botones
+     */
     private class ActionHandler implements ActionListener {
 
+        /**
+         * Selecciona el la opcion del creador de niveles
+         */
         @Override
         public void actionPerformed(ActionEvent e) {
             if (e.getSource() == btBrickAzul || e.getSource() == btBrickRojo || e.getSource() == btBrickGris) {
@@ -228,7 +253,14 @@ public class CreationLevelPanel extends JPanel {
 
     }
 
+    /**
+     * Clase que gestiona los eventos de raton de {@link #CreationLevelPanel()}
+     */
     private class MouseHandler extends MouseAdapter {
+        /**
+         * Coloca el brick seleccionado o borra en las JLabel en la que se presiona el
+         * raton
+         */
         @Override
         public void mousePressed(MouseEvent e) {
             for (int i = 0; i < espaciosVacios.length; i++) {
@@ -247,6 +279,11 @@ public class CreationLevelPanel extends JPanel {
             }
         }
 
+        /**
+         * Comprueba que se pulsa el click izquierdo del raton para pintar cuando entre
+         * en un Jlabel para colocar un brick, tambien coloca un borde y cambia el color
+         * del fondo para saber en que JLabel esta actuando
+         */
         @Override
         public void mouseEntered(MouseEvent e) {
             if (SwingUtilities.isLeftMouseButton(e)) {
@@ -277,6 +314,9 @@ public class CreationLevelPanel extends JPanel {
 
         }
 
+        /**
+         * Limpia la JLabel del borde y vuelve al fondo normal
+         */
         @Override
         public void mouseExited(MouseEvent e) {
             for (int i = 0; i < espaciosVacios.length; i++) {
@@ -289,7 +329,13 @@ public class CreationLevelPanel extends JPanel {
         }
     }
 
+    /**
+     * Clase que gestiona los eventos de teclado de {@link #CreationLevelPanel()}
+     */
     private class KeyHandler extends KeyAdapter {
+        /**
+         * Atajos de teclado para distintas opciones
+         */
         @Override
         public void keyPressed(KeyEvent e) {
             if ((e.isControlDown() && e.getKeyCode() == KeyEvent.VK_P)) {
@@ -297,13 +343,13 @@ public class CreationLevelPanel extends JPanel {
             }
 
             if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                ventanaPrincipal.creationLevelPanel.setVisible(false);
-                ventanaPrincipal.getContentPane().removeAll();
-                ventanaPrincipal.removeKeyListener(keyHandler);
+                arkanoidFrame.creationLevelPanel.setVisible(false);
+                arkanoidFrame.getContentPane().removeAll();
+                arkanoidFrame.removeKeyListener(keyHandler);
 
-                ventanaPrincipal.creationLevelPanel = null;
-                ventanaPrincipal.mainMenuPanel = new MainMenuPanel(ventanaPrincipal);
-                ventanaPrincipal.add(ventanaPrincipal.mainMenuPanel, BorderLayout.CENTER);
+                arkanoidFrame.creationLevelPanel = null;
+                arkanoidFrame.mainMenuPanel = new MainMenuPanel(arkanoidFrame);
+                arkanoidFrame.add(arkanoidFrame.mainMenuPanel, BorderLayout.CENTER);
             }
         }
     }
@@ -318,9 +364,10 @@ public class CreationLevelPanel extends JPanel {
     ActionHandler actionHandler = new ActionHandler();
     MouseHandler mouseHandler = new MouseHandler();
     KeyHandler keyHandler = new KeyHandler();
+    //TODO Cambiar por la clase ResorucesImg
     URL[] imagenes = { CreationLevelPanel.class.getResource("resource\\img\\Brick1.png"),
             CreationLevelPanel.class.getResource("resource\\img\\Brick2.png"),
             CreationLevelPanel.class.getResource("resource\\img\\Brick3.png") };
     JLabel[] espaciosVacios;
-    ArkanoidFrame ventanaPrincipal;
+    ArkanoidFrame arkanoidFrame;
 }

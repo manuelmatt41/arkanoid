@@ -70,5 +70,7 @@ public class ArkanoidFrame extends JFrame {
     MainMenuPanel mainMenuPanel;
     SkinPersonalizatonPanel skinPersonalizatonPanel;
     SoundsEffect soundsEffect = new SoundsEffect("background.wav");
-    public static final Color BACKGROUND_COLOR = new Color(147, 176, 171);
+    public final Color BACKGROUND_COLOR = new Color(147, 176, 171);
+    public final Color OPTION_COLOR_UNSELECTED = new Color(67, 186, 170);
+    public final Color OPTION_COLOR_SELECTED = new Color(56, 161, 147);
 }

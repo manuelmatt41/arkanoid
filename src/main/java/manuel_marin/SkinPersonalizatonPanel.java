@@ -55,81 +55,27 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 
+/**
+ * Clase que hereda de JPanel para gestionar la personalizacion de skins.
+ */
 public class SkinPersonalizatonPanel extends JPanel {
+    /**
+     * Inicializa las propiedades de los parametros
+     * 
+     * @param arkanoidFrame
+     */
     public SkinPersonalizatonPanel(ArkanoidFrame arkanoidFrame) {
         setLayout(null);
         this.arkanoidFrame = arkanoidFrame;
         iniciarComponentes();
         addKeyListener(keyHandler);
-        setBackground(ArkanoidFrame.BACKGROUND_COLOR);
+        setBackground(arkanoidFrame.BACKGROUND_COLOR);
         setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
     }
 
-    public void platformPaint() {
-        borrarPixeles();
-        guardarSkin.setVisible(true);
-        int x = 50, y = 200;
-        JLabel pixel;
-        archivo = "Plataforma.png";
-        abrirImagen();
-        pixeles = new JLabel[32][100];
-        for (int i = 0; i < 32; i++) {
-            for (int j = 0; j < 100; j++) {
-                pixel = new JLabel();
-                pixel.setSize(6, 6);
-                pixel.setLocation(x, y);
-                pixel.setOpaque(true);
-                pixel.setBackground(new Color(imagen.getRGB(j, i)));
-                pixel.addMouseListener(mouseHandler);
-                pixel.addKeyListener(keyHandler);
-                if (pixel.getBackground().getRGB() != transparencia) {
-                    add(pixel, BorderLayout.CENTER);
-                    pixeles[i][j] = pixel;
-                }
-                x += 6;
-            }
-            x = 50;
-            y += 6;
-        }
-        repaint();
-    }
-
-    public void ballPaint() {
-        borrarPixeles();
-        guardarSkin.setVisible(true);
-        int x = 200, y = 150;
-        JLabel pixel;
-        archivo = "Pelota.png";
-        abrirImagen();
-        pixeles = new JLabel[20][20];
-        for (int i = 0; i < 20; i++) {
-            for (int j = 0; j < 20; j++) {
-                pixel = new JLabel();
-                pixel.setSize(10, 10);
-                pixel.setLocation(x, y);
-                pixel.setOpaque(true);
-                pixel.setBackground(new Color(imagen.getRGB(j, i)));
-                pixel.addMouseListener(mouseHandler);
-                pixel.addKeyListener(keyHandler);
-
-                if (pixel.getBackground().getRGB() != transparencia) {
-                    add(pixel, BorderLayout.CENTER);
-                    pixeles[i][j] = pixel;
-                }
-                x += 10;
-            }
-            x = 200;
-            y += 10;
-        }
-
-        repaint();
-    }
-
-    private void borrarPixeles() {
-        removeAll();
-        iniciarComponentes();
-    }
-
+    /**
+     * Inicia los componentes del JPanel
+     */
     private void iniciarComponentes() {
         platformSkin = new JButton("Customizar plataforma");
         platformSkin.setSize(platformSkin.getPreferredSize());
@@ -155,11 +101,11 @@ public class SkinPersonalizatonPanel extends JPanel {
         seleccionColor.addActionListener((e) -> {
             pincel = JColorChooser.showDialog(this, "Seleccione un color", Color.black);
             if (pincel != null) {
-                if (pincel.getRGB() == transparencia) {
-                    pincel = new Color(transparencia + 1);
+                if (pincel.getRGB() == OPACO) {
+                    pincel = new Color(OPACO + 1);
                 }
             } else {
-                pincel = new Color(transparencia + 1);
+                pincel = new Color(OPACO + 1);
             }
         });
         seleccionColor.addKeyListener(keyHandler);
@@ -173,8 +119,88 @@ public class SkinPersonalizatonPanel extends JPanel {
         add(guardarSkin);
     }
 
+    /**
+     * Pinta una serie de JLabel que representa cada pixel que copia a la imagen de
+     * la plataforma para poder pintar sobre ella
+     */
+    public void platformPaint() {
+        borrarPixeles();
+        guardarSkin.setVisible(true);
+        int x = 50, y = 200;
+        JLabel pixel;
+        archivo = "Plataforma.png";
+        abrirImagen();
+        pixeles = new JLabel[32][100];
+        for (int i = 0; i < 32; i++) {
+            for (int j = 0; j < 100; j++) {
+                pixel = new JLabel();
+                pixel.setSize(6, 6);
+                pixel.setLocation(x, y);
+                pixel.setOpaque(true);
+                pixel.setBackground(new Color(imagen.getRGB(j, i)));
+                pixel.addMouseListener(mouseHandler);
+                pixel.addKeyListener(keyHandler);
+                if (pixel.getBackground().getRGB() != OPACO) {
+                    add(pixel, BorderLayout.CENTER);
+                    pixeles[i][j] = pixel;
+                }
+                x += 6;
+            }
+            x = 50;
+            y += 6;
+        }
+        repaint();
+    }
+
+    /**
+     * Pinta una serie de JLabel que representa cada pixel que copia a la imagen de
+     * la pelota para poder pintar sobre ella
+     */
+    public void ballPaint() {
+        borrarPixeles();
+        guardarSkin.setVisible(true);
+        int x = 200, y = 150;
+        JLabel pixel;
+        archivo = "Pelota.png";
+        abrirImagen();
+        pixeles = new JLabel[20][20];
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 20; j++) {
+                pixel = new JLabel();
+                pixel.setSize(10, 10);
+                pixel.setLocation(x, y);
+                pixel.setOpaque(true);
+                pixel.setBackground(new Color(imagen.getRGB(j, i)));
+                pixel.addMouseListener(mouseHandler);
+                pixel.addKeyListener(keyHandler);
+
+                if (pixel.getBackground().getRGB() != OPACO) {
+                    add(pixel, BorderLayout.CENTER);
+                    pixeles[i][j] = pixel;
+                }
+                x += 10;
+            }
+            x = 200;
+            y += 10;
+        }
+
+        repaint();
+    }
+
+    /**
+     * Borra todas los componentes y vuelve inciar los componentes iniciales
+     */
+    private void borrarPixeles() {
+        removeAll();
+        iniciarComponentes();
+    }
+
+    /**
+     * Abre la imagen para personalizar la del usuario, sino abre la que viene por
+     * defecto.
+     */
     public void abrirImagen() {
-        File f = new File(System.getProperty("user.home") + "\\AppData\\Roaming\\arkanoid\\img\\" + archivo);
+        File f = new File(System.getProperty("user.home") + "/AppData/Roaming/arkanoid/img/" + archivo);
         if (f.exists()) {
             try {
                 imagen = ImageIO.read(f);
@@ -184,13 +210,16 @@ public class SkinPersonalizatonPanel extends JPanel {
         } else {
             try {
                 imagen = ImageIO
-                        .read(new File(SkinPersonalizatonPanel.class.getResource("img\\" + archivo).toURI()));
+                        .read(new File(SkinPersonalizatonPanel.class.getResource("resource/img/" + archivo).toURI()));
             } catch (IOException | URISyntaxException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    /**
+     * Pinta la imagen con los nuevos colores
+     */
     private void cambiarImagen() {
         for (int i = 0; i < imagen.getHeight(); i++) {
             for (int j = 0; j < imagen.getWidth(); j++) {
@@ -201,11 +230,14 @@ public class SkinPersonalizatonPanel extends JPanel {
         }
     }
 
+    /**
+     * Esatblece un color transparente y lo guarda
+     */
     private void guardarTransparencia() {
         ImageFilter filter = new RGBImageFilter() {
             @Override
             public int filterRGB(int x, int y, int rgb) {
-                if ((rgb | 0xFF000000) == transparencia) {
+                if ((rgb | 0xFF000000) == OPACO) {
                     // Mark the alpha bits as zero - transparent
                     return 0x00FFFFFF & rgb;
                 } else {
@@ -223,13 +255,31 @@ public class SkinPersonalizatonPanel extends JPanel {
         g2dImg.dispose();
     }
 
+    /**
+     * Guarda la imagen personalizada en el AppData y si no existe la carpeta la
+     * crea
+     */
     public void guardarImagen() {
         cambiarImagen();
         guardarTransparencia();
+        File f = new File(System.getProperty("user.home") + "/AppData/Roaming/arkanoid/img");
         try {
-            if (ImageIO.write(imagen, "png",
-                    new File(System.getProperty("user.home") + "\\AppData\\Roaming\\arkanoid\\img\\" + archivo))) {
-                JOptionPane.showMessageDialog(this, "Se ha guardado correctamente");
+            if (f.exists()) {
+                if (ImageIO.write(imagen, "png",
+                        new File(System.getProperty("user.home") + "/AppData/Roaming/arkanoid/img/" + archivo))) {
+                    JOptionPane.showMessageDialog(this, "Se ha guardado correctamente");
+                }
+            } else {
+                if (f.mkdirs()) {
+                    f = new File(f.getAbsolutePath() + "/" + archivo);
+                    if (f.createNewFile()) {
+                        if (ImageIO.write(imagen, "png",
+                                new File(System.getProperty("user.home") + "/AppData/Roaming/arkanoid/img/"
+                                        + archivo))) {
+                            JOptionPane.showMessageDialog(this, "Se ha guardado correctamente");
+                        }
+                    }
+                }
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "No se ha guardado correctamente");
@@ -237,7 +287,15 @@ public class SkinPersonalizatonPanel extends JPanel {
         guardarSkin.setVisible(false);
     }
 
+    /**
+     * Clase que gestiona los eventos de raton de {@link #SkinPersonalizatonPanel()}
+     */
     private class MouseHandler extends MouseAdapter {
+        /**
+         * Comprueba que se mantiene el click izquierdo para pintar el color
+         * seleccionado cuando se entre a cada JLabel que repensenta los pixeles.
+         * Tambien crea un borde para ver el JLabel seleccionado
+         */
         @Override
         public void mouseEntered(MouseEvent e) {
             JLabel pixel = (JLabel) e.getSource();
@@ -248,6 +306,9 @@ public class SkinPersonalizatonPanel extends JPanel {
             }
         }
 
+        /**
+         * Elimina el borde de las JLabel al sacar el raton de encima
+         */
         @Override
         public void mouseExited(MouseEvent e) {
             JLabel pixel = (JLabel) e.getSource();
@@ -256,6 +317,9 @@ public class SkinPersonalizatonPanel extends JPanel {
 
         }
 
+        /**
+         * Pinta el JLabel seleccionado con el color selecciona
+         */
         @Override
         public void mousePressed(MouseEvent e) {
             JLabel pixel = (JLabel) e.getSource();
@@ -266,7 +330,13 @@ public class SkinPersonalizatonPanel extends JPanel {
 
     }
 
+    /**
+     * Clase que gestiona los eventos de teclado de {@link #SkinPersonalizatonPanel()}
+     */
     private class KeyHandler extends KeyAdapter {
+        /**
+         * Atajos de teclado
+         */
         @Override
         public void keyPressed(KeyEvent e) {
             if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_P) {
@@ -283,8 +353,14 @@ public class SkinPersonalizatonPanel extends JPanel {
         }
     }
 
+    /**
+     * Clase que gestiona las acciones de los botones
+     */
     private class ActionHandler implements ActionListener {
 
+        /**
+         * Guarda la imagen si la imagen ha sido abierta
+         */
         @Override
         public void actionPerformed(ActionEvent e) {
             if (imagen != null) {
@@ -300,13 +376,25 @@ public class SkinPersonalizatonPanel extends JPanel {
     JButton ballSkin;
     JButton seleccionColor;
     JButton guardarSkin;
+    /**
+     * Lista de JLabel que representar la cantidad de pixeles de las imagenes
+     */
     JLabel[][] pixeles;
     MouseHandler mouseHandler = new MouseHandler();
     KeyHandler keyHandler = new KeyHandler();
+    /**
+     * Color seleccionado para pintar en las imagenes
+     */
     Color pincel = Color.black;
     BufferedImage imagen;
     ActionHandler actionHandler = new ActionHandler();
+    /**
+     * Nombre del archivo de la imagen
+     */
     String archivo;
-    int transparencia = 0xFF000000;
+    /**
+     * Numero hexadecimal que reprensenta el RGB transparente de la imagen.
+     */
+    final int OPACO = 0xFF000000;
     ArkanoidFrame arkanoidFrame;
 }

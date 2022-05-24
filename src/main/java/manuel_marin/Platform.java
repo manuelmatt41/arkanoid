@@ -4,7 +4,14 @@ import java.awt.Point;
 
 import javax.swing.JLabel;
 
+/**
+ * Clase que hereda de JLabel para formar la plataforma del juego
+ */
 public class Platform extends JLabel {
+    /**
+     * Incializa las propiedades de los parametros
+     * @param location Punto donde se encuentra la plataforma
+     */
     public Platform(Point location) {
         super();
 
@@ -16,6 +23,11 @@ public class Platform extends JLabel {
         setCornerHitbox();
     }
 
+    /**
+     * Devuelve la posicion de la hitbox superior de la plataforma
+     * @param hitbox Hitbox que se va a calcular la hitbox
+     * @return Devuelve la posiconde la hitbox
+     */
     private Point calculateCornersHitboxs(int hitbox) {
         if (hitbox == 0) {
             return new Point(this.getLocation());
@@ -29,6 +41,9 @@ public class Platform extends JLabel {
         return new Point();
     }
 
+    /**
+     * Establece las hitbox de las esquinas superiores de la plataforma
+     */
     public void setCornerHitbox() {
         for (int i = 0; i < cornerHitbox.length; i++) {
             JLabel l = new JLabel();
@@ -38,6 +53,12 @@ public class Platform extends JLabel {
         }
     }
 
+    /**
+     * Direccion de movimiento de la plataforma
+     */
     boolean direction;
+    /**
+     * Lista de las hitbox de las esquinas superiores de la plataforma
+     */
     JLabel[] cornerHitbox;
 }

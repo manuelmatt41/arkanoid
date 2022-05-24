@@ -58,7 +58,7 @@ public class GamePanel extends JPanel {
         startTimers();
 
         setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED, Color.black, Color.black));
-        setBackground(ArkanoidFrame.BACKGROUND_COLOR);
+        setBackground(arkanoidFrame.BACKGROUND_COLOR);
     }
     
     /**
@@ -243,70 +243,73 @@ public class GamePanel extends JPanel {
          * Se encarga de detectar las colisiones de la pelota con los bricks de la partida.
          */
         public void ballHitBrick() {
-            new Thread(() -> {
-                for (int i = 0; i < bricks.length; i++) {
-                    if (bricks[i] != null) {
-                        if (bricks[i].isVisible()) {
-                            if (bricks[i].getBounds().intersects(ball.getBounds())) {
-                                for (int j = 0; j < bricks[i].sideHitbox.length; j++) {
-                                    if (bricks[i].sideHitbox[j].getBounds().intersects(ball.getBounds())) {
-                                        if (j == 0) {
-                                            ball.directionY = false;
-                                        }
-
-                                        if (j == 1) {
-                                            ball.directionX = false;
-                                        }
-
-                                        if (j == 2) {
-                                            ball.directionX = true;
-                                        }
-
-                                        if (j == 3) {
-                                            ball.directionY = true;
-                                        }
-
-                                        actualSpeed = ball.NORMAL_SPEED;
-
-                                        if (bricks[i].cornerHitbox[j].getBounds().intersects(ball.getBounds())) {
-                                            if (j == 0 || j == 2) {
+            
+            if (bricksVisibles == EMPTY_MAP) {
+                ballFPS.stop();
+                gameExit();
+                return;
+            } else {
+                new Thread(() -> {
+                    for (int i = 0; i < bricks.length; i++) {
+                        if (bricks[i] != null) {
+                            if (bricks[i].isVisible()) {
+                                if (bricks[i].getBounds().intersects(ball.getBounds())) {
+                                    for (int j = 0; j < bricks[i].sideHitbox.length; j++) {
+                                        if (bricks[i].sideHitbox[j].getBounds().intersects(ball.getBounds())) {
+                                            if (j == 0) {
+                                                ball.directionY = false;
+                                            }
+    
+                                            if (j == 1) {
                                                 ball.directionX = false;
-                                            } else {
+                                            }
+    
+                                            if (j == 2) {
                                                 ball.directionX = true;
                                             }
-
-                                            actualSpeed = ball.ACELERATE_SPEED;
+    
+                                            if (j == 3) {
+                                                ball.directionY = true;
+                                            }
+    
+                                            actualSpeed = ball.NORMAL_SPEED;
+    
+                                            if (bricks[i].cornerHitbox[j].getBounds().intersects(ball.getBounds())) {
+                                                if (j == 0 || j == 2) {
+                                                    ball.directionX = false;
+                                                } else {
+                                                    ball.directionX = true;
+                                                }
+    
+                                                actualSpeed = ball.ACELERATE_SPEED;
+                                            }
                                         }
                                     }
+    
+                                    if (bricks[i].getClass() == BlueBrick.class) {
+                                        bricks[i].setVisible(false);
+                                        bricksVisibles--;
+                                    }
+    
+                                    if (bricks[i].getClass() == RedBrick.class) {
+                                        remove(bricks[i]);
+                                        bricks[i] = new BlueBrick(bricks[i].getLocation());
+                                        add(bricks[i]);
+                                        bricks[i].repaint();
+                                    }
+    
+                                    ballX += ball.directionX ? 3 : -3;
+                                    soundsEffect = new SoundsEffect("pop.wav");
+                                    soundsEffect.play();
+                                    arkanoidFrame.gameDataPanel.puntuacion += 100;
+                                    arkanoidFrame.gameDataPanel.updateLabels();;
                                 }
-
-                                if (bricks[i].getClass() == BlueBrick.class) {
-                                    bricks[i].setVisible(false);
-                                    bricksVisibles--;
-                                }
-
-                                if (bricks[i].getClass() == RedBrick.class) {
-                                    remove(bricks[i]);
-                                    bricks[i] = new BlueBrick(bricks[i].getLocation());
-                                    add(bricks[i]);
-                                    bricks[i].repaint();
-                                }
-
-                                ballX += ball.directionX ? 3 : -3;
-                                soundsEffect = new SoundsEffect("pop.wav");
-                                soundsEffect.play();
-                                arkanoidFrame.gameDataPanel.puntuacion += 100;
-                                arkanoidFrame.gameDataPanel.updateLabels();;
                             }
                         }
                     }
-                }
-
-                if (bricksVisibles == EMPTY_MAP) {
-                    gameExit();
-                }
-            }) {
-            }.start();
+                }) {
+                }.start();
+            }
         }
 
         /**

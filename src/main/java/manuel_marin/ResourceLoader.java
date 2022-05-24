@@ -87,6 +87,11 @@ public class ResourceLoader {
         return mapa;
     }
 
+    /**
+     * Devuelve la imagen correpondiente al tipo de Imagen que se quiere
+     * @param resourceType Tipo de objeto que se requiere su imagen
+     * @return Devuelve la imagen correspndiente, si no se encuentra o no tiene devuelve la imagen por defecto del objeto
+     */
     public static ImageIcon skinLoader(ResourcesImg resourceType) {
         if (resourceType.userFile != null) {
             if (resourceType.userFile.exists()) {
@@ -98,6 +103,11 @@ public class ResourceLoader {
 
     }
 
+    /**
+     * Devuelve la imagen por defecto del tipo de objeto que contiene la imagen
+     * @param resourceType Tipo de objeto que contiene la imagen
+     * @return Devuelve la imagen por defecto del tipo de objeto
+     */
     private static ImageIcon skinLoaderResource(ResourcesImg resourceType) {
         return new ImageIcon(resourceType.resourcePath);
     }

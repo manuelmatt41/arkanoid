@@ -39,7 +39,6 @@ import java.util.Hashtable;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
@@ -70,48 +69,55 @@ public class MainMenuPanel extends JPanel {
         levelSelectionText = new JLabel("Seleccionar nivel");
         levelSelectionText.setFont(setFontSize(font, 17));
         levelSelectionText.setForeground(Color.white);
-        levelSelectionText.setSize(levelSelectionText.getPreferredSize());
-        levelSelectionText.setLocation(265, 55);
+        levelSelectionText.setSize(200, 75);
+        levelSelectionText.setLocation(265, 50);
+        levelSelectionText.setOpaque(true);
+        levelSelectionText.setBackground(arkanoidFrame.OPTION_COLOR_UNSELECTED);
+        levelSelectionText.setBorder(BorderFactory.createEtchedBorder(Color.gray, Color.gray));
         levelSelectionText.addMouseListener(mainMenuMouseEventManager);
         add(levelSelectionText);
-
-        selectionLevelBackground = new JLabel(new ImageIcon(MainMenuPanel.class.getResource("resource\\img\\menu.png")));
-        selectionLevelBackground.setSize(selectionLevelBackground.getPreferredSize());
-        selectionLevelBackground.setLocation(250, 20);
-        selectionLevelBackground.addMouseListener(mainMenuMouseEventManager);
-        add(selectionLevelBackground);
 
         levelCreationText = new JLabel("Crear nivel");
         levelCreationText.setFont(setFontSize(font, 17));
         levelCreationText.setForeground(Color.white);
-        levelCreationText.setSize(levelCreationText.getPreferredSize());
-        levelCreationText.setLocation(285, 175);
+        levelCreationText.setSize(200, 75);
+        levelCreationText.setLocation(265, 150);
+        levelCreationText.setOpaque(true);
+        levelCreationText.setBackground(arkanoidFrame.OPTION_COLOR_UNSELECTED);
+        levelCreationText.setBorder(BorderFactory.createEtchedBorder(Color.gray, Color.gray));
         levelCreationText.addMouseListener(mainMenuMouseEventManager);
         add(levelCreationText);
-
-        levelCreationBackground = new JLabel(new ImageIcon(MainMenuPanel.class.getResource("resource\\img\\menu.png")));
-        levelCreationBackground.setSize(levelCreationBackground.getPreferredSize());
-        levelCreationBackground.setLocation(250, 140);
-        levelCreationBackground.addMouseListener(mainMenuMouseEventManager);
-        add(levelCreationBackground);
 
         skinPersonalizationText = new JLabel("Personalizar skins");
         skinPersonalizationText.setFont(setFontSize(font, 17));
         skinPersonalizationText.setForeground(Color.white);
-        skinPersonalizationText.setSize(skinPersonalizationText.getPreferredSize());
-        skinPersonalizationText.setLocation(257, 290);
+        skinPersonalizationText.setSize(200, 75);
+        skinPersonalizationText.setLocation(265, 250);
+        skinPersonalizationText.setOpaque(true);
+        skinPersonalizationText.setBackground(arkanoidFrame.OPTION_COLOR_UNSELECTED);
+        skinPersonalizationText.setBorder(BorderFactory.createEtchedBorder(Color.gray, Color.gray));
         skinPersonalizationText.addMouseListener(mainMenuMouseEventManager);
         add(skinPersonalizationText);
 
-        skinPersonalizationBackground = new JLabel(new ImageIcon(MainMenuPanel.class.getResource("resource\\img\\menu.png")));
-        skinPersonalizationBackground.setSize(skinPersonalizationBackground.getPreferredSize());
-        skinPersonalizationBackground.setLocation(250, 260);
-        skinPersonalizationBackground.addMouseListener(mainMenuMouseEventManager);
-        add(skinPersonalizationBackground);
+        programExitText = new  JLabel("salir");
+        programExitText.setFont(setFontSize(font, 17));
+        programExitText.setForeground(Color.white);
+        programExitText.setSize(200, 75);
+        programExitText.setLocation(265, 350);
+        programExitText.setOpaque(true);
+        programExitText.setBackground(arkanoidFrame.OPTION_COLOR_UNSELECTED);
+        programExitText.setBorder(BorderFactory.createEtchedBorder(Color.gray, Color.gray));
+        programExitText.addMouseListener(mainMenuMouseEventManager);
+        add(programExitText);
 
         musicText = new JLabel("Musica " + (musica ? "on" : "off"));
-        musicText.setSize(musicText.getPreferredSize());
-        musicText.setLocation(20, 450);
+        musicText.setFont(setFontSize(font, 12));
+        musicText.setForeground(Color.white);
+        musicText.setSize(80, 80);
+        musicText.setLocation(20, 350);
+        musicText.setOpaque(true);
+        musicText.setBackground(arkanoidFrame.OPTION_COLOR_UNSELECTED);
+        musicText.setBorder(BorderFactory.createEtchedBorder(Color.gray, Color.gray));
         musicText.addMouseListener(mainMenuMouseEventManager);
         add(musicText);
     }
@@ -148,7 +154,7 @@ public class MainMenuPanel extends JPanel {
         @Override
         public void mouseClicked(MouseEvent e) {
             //Eliminan el panel actual de la ventana y crean el respectivo panel que se va.
-            if (e.getSource() == levelSelectionText || e.getSource() == selectionLevelBackground) {
+            if (e.getSource() == levelSelectionText) {
                 arkanoidFrame.mainMenuPanel.setVisible(false);
                 arkanoidFrame.getContentPane().removeAll();
 
@@ -159,7 +165,7 @@ public class MainMenuPanel extends JPanel {
                 arkanoidFrame.addKeyListener(arkanoidFrame.levelSelectionPanel.levelCreationKeyEventManager);
             }
 
-            if (e.getSource() == levelCreationText || e.getSource() == levelCreationBackground) {
+            if (e.getSource() == levelCreationText) {
                 arkanoidFrame.mainMenuPanel.setVisible(false);
                 arkanoidFrame.getContentPane().removeAll();
 
@@ -170,7 +176,7 @@ public class MainMenuPanel extends JPanel {
                 arkanoidFrame.addKeyListener(arkanoidFrame.creationLevelPanel.keyHandler);
             }
 
-            if (e.getSource() == skinPersonalizationText || e.getSource() == skinPersonalizationBackground) {
+            if (e.getSource() == skinPersonalizationText) {
                 arkanoidFrame.mainMenuPanel.setVisible(false);
                 arkanoidFrame.getContentPane().removeAll();
                 
@@ -181,10 +187,14 @@ public class MainMenuPanel extends JPanel {
                 arkanoidFrame.addKeyListener(arkanoidFrame.skinPersonalizatonPanel.keyHandler);
             }
 
+            if (e.getSource() == programExitText) {
+                System.exit(0);
+            }
+
             if (e.getSource() == musicText) {
                 musica = !musica;
                 musicText.setText("Musica " + (musica ? "on" : "off"));
-                musicText.setSize(musicText.getPreferredSize());
+                musicText.setSize(80, 80);
 
                 if (musica) {
                     arkanoidFrame.soundsEffect.loop();
@@ -194,14 +204,26 @@ public class MainMenuPanel extends JPanel {
             }
         }
 
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            JLabel l = (JLabel) e.getSource();
+
+            l.setBackground(arkanoidFrame.OPTION_COLOR_SELECTED);
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            JLabel l = (JLabel) e.getSource();
+
+            l.setBackground(arkanoidFrame.OPTION_COLOR_UNSELECTED);
+        }
+
     }
 
     JLabel levelSelectionText;
-    JLabel selectionLevelBackground;
     JLabel levelCreationText;
-    JLabel levelCreationBackground;
     JLabel skinPersonalizationText;
-    JLabel skinPersonalizationBackground;
+    JLabel programExitText;
     JLabel musicText;
     ArkanoidFrame arkanoidFrame;
     MainMenuMouseEventManager mainMenuMouseEventManager = new MainMenuMouseEventManager();
